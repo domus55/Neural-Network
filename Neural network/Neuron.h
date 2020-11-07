@@ -22,7 +22,6 @@ private:
 	float *weight;
 	float bias;
 	int amountOfWeights;
-
 	void MutateAllWeights();
 	///<summary>
 	///mutates some percent of weights

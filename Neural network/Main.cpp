@@ -36,7 +36,7 @@ int main()
 	cout << "Hints: \n" <<
 		"1. Use 'o' and 'p' keys to see actual game \n" <<
 		"2. The neural network has a cross mark \n" <<
-		"3. Easy opponent is really difficult to beat for neural network, becouse he chooses random field \n";
+		"3. Easy opponent is really difficult to beat for neural network, because he chooses random field \n";
 	Sleep(1000);
 	cout << "Click any key \n";
 	_getwch();
@@ -377,10 +377,10 @@ void siecNeuronowa(char znakk)
 	if (pierwszyRaz)
 	{
 		bot.SetAmmountOfChildrens(1000);
-		bot.SetMutationRate(0.05);
-		bot.SetNextGenerationDescendantsRate(0.1);
-		bot.SetTestAmmount(5);
-		bot.Create(18, 9);
+		bot.SetMutationRate(0.02);
+		bot.SetNextGenerationDescendantsRate(0.05);
+		bot.SetTestAmmount(6);
+		bot.Create(18, 12, 9);
 		pierwszyRaz = false;
 	}
 
@@ -388,7 +388,7 @@ void siecNeuronowa(char znakk)
 	{
 		float wygrana = 0;
 		if (plansza.koniec == znak) wygrana = 1;
-		if (plansza.koniec == 3) wygrana = 0.5;
+		if (plansza.koniec == 3) wygrana = 0.75;
 		bot.Update(wygrana);
 
 		plansza.koniec = 0;

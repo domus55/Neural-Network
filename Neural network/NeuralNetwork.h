@@ -9,7 +9,7 @@ class NeuralNetwork
 public:
 	float WinRate = 0;
 
-	NeuralNetwork(unsigned int layer1, unsigned int layer2);
+	NeuralNetwork(int layer1, int layer2, int layer3 = 0, int layer4 = 0, int layer5 = 0, int layer6 = 0);
 	void Copy(NeuralNetwork neuralNetwork2);
 	void Input(int neuron, int value);
 	void CalculateTheOutput();
@@ -25,6 +25,8 @@ private:
 	int layer2 = 0;
 	int layer3 = 0;
 	int layer4 = 0;
+	int layer5 = 0;
+	int layer6 = 0;
 	void AddNeurons(int ammount, int ammountOfWeights);
 	void CalculateNextLayerValue(int layer1, int layer2, int firstNeuronId);
 };

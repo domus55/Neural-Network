@@ -7,7 +7,7 @@
 class NeuralNetworkBot
 {
 public:
-	void Create(int layer1, int layer2);
+	void Create(unsigned int layer1, unsigned int layer2, unsigned int layer3 = 0, unsigned int layer4 = 0, unsigned int layer5 = 0, unsigned int layer6 = 0);
 	void SetAmmountOfChildrens(int ammount);
 	void SetMutationRate(float rate);
 	void SetTestAmmount(int ammount);

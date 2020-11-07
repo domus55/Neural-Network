@@ -1,6 +1,6 @@
 #include "NeuralNetworkBot.h"
 
-void NeuralNetworkBot::Create(int layer1, int layer2)
+void NeuralNetworkBot::Create(unsigned int layer1, unsigned int layer2, unsigned int layer3, unsigned int layer4, unsigned int layer5, unsigned int layer6)
 {
 	nextGenerationDescendants = (int)(nextGenerationDescendantsRate * ammountOfChildrens);
 	theBestNetworksIds = new int[nextGenerationDescendants];
@@ -12,7 +12,7 @@ void NeuralNetworkBot::Create(int layer1, int layer2)
 
 	for (int i = 0; i < ammountOfChildrens; i++)
 	{
-		NeuralNetwork n(layer1, layer2);
+		NeuralNetwork n(layer1, layer2, layer3, layer4, layer5, layer6);
 		n.SetMutationRate(mutationRate);
 		neuralNetwork.push_back(n);
 	}
@@ -149,6 +149,12 @@ void NeuralNetworkBot::MutateAllNetworks()
 {
 	for (int i = 0; i < ammountOfChildrens; i++)
 	{
-		neuralNetwork[i].Mutate();
+		if (rand() % 1000 / 1000.0 < mutationRate)	//mutate whole neural network
+		{
+			neuralNetwork[i].SetMutationRate(1);
+			neuralNetwork[i].Mutate();
+			neuralNetwork[i].SetMutationRate(mutationRate);
+		}
+		else neuralNetwork[i].Mutate();
 	}
 }

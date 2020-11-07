@@ -1,13 +1,37 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(unsigned int layer1, unsigned int layer2)
+NeuralNetwork::NeuralNetwork(int layer1, int layer2, int layer3, int layer4, int layer5, int layer6)
 {
 	srand(time(NULL));
 
 	AddNeurons(layer1, layer2);
-	AddNeurons(layer2, 1);
+
+	if(layer3 == 0) AddNeurons(layer2, 1);
+	else
+	{
+		AddNeurons(layer2, layer3);
+		if (layer4 == 0) AddNeurons(layer3, 1);
+		else
+		{
+			AddNeurons(layer3, layer4);
+			if (layer5 == 0) AddNeurons(layer4, 1);
+			else
+			{
+				AddNeurons(layer4, layer5);
+				if (layer6 == 0) AddNeurons(layer5, 1);
+				else
+				{
+					AddNeurons(layer5, layer6);
+					AddNeurons(layer6, 1);
+				}
+			}
+		}
+	}
+
 	this->layer1 = layer1;
 	this->layer2 = layer2;
+	this->layer3 = layer3;
+	this->layer4 = layer4;
 }
 
 void NeuralNetwork::Copy(NeuralNetwork neuralNetwork2)
@@ -36,11 +60,20 @@ void NeuralNetwork::Input(int neuron, int value)
 void NeuralNetwork::CalculateTheOutput()
 {
 	CalculateNextLayerValue(layer1, layer2, 0);
+	if(layer3 != 0) CalculateNextLayerValue(layer2, layer3, layer1);
+	if(layer4 != 0) CalculateNextLayerValue(layer3, layer4, layer1 + layer2);
+	if(layer5 != 0) CalculateNextLayerValue(layer4, layer5, layer1 + layer2 + layer3);
+	if(layer6 != 0) CalculateNextLayerValue(layer5, layer6, layer1 + layer2 + layer3 + layer4);
 }
 
 float NeuralNetwork::Output(int neuronId)
 {
-	return neuron[layer1 + neuronId].Output();
+	if(layer3 == 0) return neuron[layer1 + neuronId].Output();
+	if(layer4 == 0) return neuron[layer1 + layer2 + neuronId].Output();
+	if(layer5 == 0) return neuron[layer1 + layer2 + layer3 + neuronId].Output();
+	if(layer6 == 0) return neuron[layer1 + layer2 + layer3 + layer4 + neuronId].Output();
+	else			return neuron[layer1 + layer2 + layer3 + layer4 + layer5 + neuronId].Output();
+	
 }
 
 void NeuralNetwork::SetMutationRate(float rate)
