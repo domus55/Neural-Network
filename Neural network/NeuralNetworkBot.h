@@ -13,12 +13,11 @@ public:
 	void SetTestAmmount(int ammount);
 
 	///<summary>
-	/// How many percentage of all children will be base to next generation
+	/// How many percentage of all children will be the base to next generation
 	///</summary>
-	void SetNextGenerationDescendantsRate(float rate);
-
+	void SetNextGenerationDescendantsPercentage(float rate);
 	///<summary>
-	/// Use this after all win/lose
+	/// Use this after each game to let neural network know, how good it was
 	///</summary>
 	void Update(float win);
 	void Input(int neuronId, float value);
@@ -28,8 +27,8 @@ private:
 	std::vector <NeuralNetwork> neuralNetwork;
 	int ammountOfChildrens = 100;
 	float mutationRate = 0.05;
-	float nextGenerationDescendantsRate = 0.1;
-	float nextGenerationDescendants = 0;
+	float nextGenerationDescendantsPercentage = 0.1;
+	int nextGenerationDescendants = 0;
 	int testAmmount = 1;
 	int activeTest;
 	//Neural network which is reciving inputs, and giving outputs

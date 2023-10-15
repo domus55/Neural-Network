@@ -21,6 +21,7 @@ public:
 private:
 	std::vector <Neuron> neuron;
 	float mutationRate = 0.05;
+	//Ammount of neurons in each layer
 	int layer1 = 0;
 	int layer2 = 0;
 	int layer3 = 0;

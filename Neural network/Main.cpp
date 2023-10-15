@@ -5,13 +5,14 @@
 #include <ctime>
 #include <cstdio>
 #include <conio.h>
-#include "Plansza.h"
+#include "Board.h"
 #include "Neuron.h"
 #include "NeuralNetworkBot.h"
+#include "gtest/gtest.h"
 
 using namespace std;
 
-Plansza plansza;
+Board board;
 
 NeuralNetworkBot bot;
 
@@ -20,13 +21,16 @@ void bot1(char);
 void bot2(char);
 void bot3(char);
 void bot4(char);
-void siecNeuronowa(char);
+void neuralNetwork(char);
 
 bool stopp = false; // usunac
 bool stopp2 = false; //usunac
 
-int main()
+int main(int argc, char* argv[])
 {
+	testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
+
 	srand(time(NULL));
 	int O_buffor, X_buffor;
 	typedef void(*bot)(char);
@@ -36,7 +40,7 @@ int main()
 	cout << "Hints: \n" <<
 		"1. Use 'o' and 'p' keys to see actual game \n" <<
 		"2. The neural network has a cross mark \n" <<
-		"3. Easy opponent is really difficult to beat for neural network, because he chooses random field \n";
+		"3. Easy opponent is really difficult to beat for neural network, because it chooses random fields \n";
 	Sleep(1000);
 	cout << "Click any key \n";
 	_getwch();
@@ -51,7 +55,7 @@ int main()
 	O_buffor = _getwch();
 
 
-	X = siecNeuronowa;
+	X = neuralNetwork;
 
 	switch (O_buffor)
 	{
@@ -65,40 +69,52 @@ int main()
 	{
 		O('o');
 		stop();
-		plansza.Wygrana();
+		board.Wygrana();
 
 		X('x');
 		stop();
-		plansza.Wygrana();
+		board.Wygrana();
 	}
 
 }
 
-void bot1(char znakk)
+///<summary>
+///This bot puts sign on a random empty field
+///</summary>
+void bot1(char symboll)
 {
-	int znak;
-	if (znakk == 'o') znak = 1;
-	else znak = 2;
+	int symbol;
+	if (symboll == 'o') symbol = 1;
+	else symbol = 2;
 
-start:;
 
-	int a = rand() % 3;
-	int b = rand() % 3;
+	bool end;
+	do {
+		int a = rand() % 3;
+		int b = rand() % 3;
+		end = false;
 
-	if (plansza.pole[a][b] == 0) plansza.pole[a][b] = znak;
-	else goto start;
+		if (board.field[a][b] == 0) {
+			board.field[a][b] = symbol;
+			end = true;
+		}
+	} while (!end);
 }
 
-void bot2(char znakk)
+///<summary>
+///This bot assgns value to all fields and puts sign on the most valuable one.
+///If there are few fields with the same value, it chooses a random one
+///</summary>
+void bot2(char symboll)
 {
-	int los;
-	int najwieksza;
-	int licznik = 0;
+	int randField;
+	int mostValuableField;
+	int amountOfBestFields = 0;
 	int x[9];
 
-	int znak;
-	if (znakk == 'o') znak = 1;
-	else znak = 2;
+	int symbol;
+	if (symboll == 'o') symbol = 1;
+	else symbol = 2;
 
 	x[4] = 11;
 	x[0] = 6;
@@ -110,52 +126,56 @@ void bot2(char znakk)
 	x[5] = 4;
 	x[7] = 4;
 
-
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			if (plansza.pole[i][j] != 0) { x[i * 3 + j] = 0; }
+			if (board.field[i][j] != 0) { x[i * 3 + j] = 0; }
 		}
 	}
 
-	najwieksza = x[0];
+	mostValuableField = x[0];
 	for (int i = 1; i < 9; i++)
 	{
-		if (x[i] >= najwieksza) { najwieksza = x[i]; }
+		if (x[i] >= mostValuableField) { mostValuableField = x[i]; }
 	}
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { licznik++; }
+		if (x[i] == mostValuableField) { amountOfBestFields++; }
 	}
-	los = rand() % licznik;
+	randField = rand() % amountOfBestFields;
 
-	int * liczby = new int[licznik];
+	int *bestFields = new int[amountOfBestFields];
 
 	int b = 0;
 	int n = 0;
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { liczby[b] = i; b++; }
+		if (x[i] == mostValuableField) { bestFields[b] = i; b++; }
 	}
 
-	n = liczby[los];
+	n = bestFields[randField];
 
-	plansza.pole[n / 3][n % 3] = znak;
+	board.field[n / 3][n % 3] = symbol;
 }
 
-void bot3(char znakk)
+///<summary>
+///This bot assgns value to all fields and puts sign on the most valuable one.
+///Fields can change value if there are other marks around it.
+///If there are few fields with the same value, it chooses a random one
+///</summary>
+void bot3(char symboll)
 {
-	int los;
-	int najwieksza;
-	int licznik = 0;
+	int randomField;
+	int mostValuableField;
+	int amountOfBestFields = 0;
 	int x[9];
 
-	int znak;
-	if (znakk == 'o') znak = 1;
-	else znak = 2;
+	int symbol;
+	if (symboll == 'o') symbol = 1;
+	else symbol = 2;
 
 	x[4] = 11;
 	x[0] = 6;
@@ -167,90 +187,97 @@ void bot3(char znakk)
 	x[5] = 4;
 	x[7] = 4;
 
-	if (plansza.pole[0][0] == znak) { x[1] += 4; x[2] += 2; x[3] += 4; x[6] += 4; }
-	if (plansza.pole[0][2] == znak) { x[0] += 4; x[1] += 2; x[5] += 4; x[8] += 4; }
-	if (plansza.pole[2][0] == znak) { x[0] += 4; x[3] += 2; x[7] += 4; x[8] += 4; }
-	if (plansza.pole[2][2] == znak) { x[2] += 4; x[5] += 2; x[6] += 4; x[7] += 4; }
+	if (board.field[0][0] == symbol) { x[1] += 4; x[2] += 2; x[3] += 4; x[6] += 4; }
+	if (board.field[0][2] == symbol) { x[0] += 4; x[1] += 2; x[5] += 4; x[8] += 4; }
+	if (board.field[2][0] == symbol) { x[0] += 4; x[3] += 2; x[7] += 4; x[8] += 4; }
+	if (board.field[2][2] == symbol) { x[2] += 4; x[5] += 2; x[6] += 4; x[7] += 4; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[1][0] == znak) { x[6] += 20; }
-	if (plansza.pole[0][1] == znak && plansza.pole[1][1] == znak) { x[7] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[1][2] == znak) { x[8] += 20; }
+	if (board.field[0][0] == symbol && board.field[1][0] == symbol) { x[6] += 20; }
+	if (board.field[0][1] == symbol && board.field[1][1] == symbol) { x[7] += 20; }
+	if (board.field[0][2] == symbol && board.field[1][2] == symbol) { x[8] += 20; }
 
-	if (plansza.pole[1][0] == znak && plansza.pole[2][0] == znak) { x[0] += 20; }
-	if (plansza.pole[1][1] == znak && plansza.pole[2][1] == znak) { x[1] += 20; }
-	if (plansza.pole[1][2] == znak && plansza.pole[2][2] == znak) { x[2] += 20; }
+	if (board.field[1][0] == symbol && board.field[2][0] == symbol) { x[0] += 20; }
+	if (board.field[1][1] == symbol && board.field[2][1] == symbol) { x[1] += 20; }
+	if (board.field[1][2] == symbol && board.field[2][2] == symbol) { x[2] += 20; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[0][1] == znak) { x[2] += 20; }
-	if (plansza.pole[1][0] == znak && plansza.pole[1][1] == znak) { x[5] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[2][1] == znak) { x[8] += 20; }
+	if (board.field[0][0] == symbol && board.field[0][1] == symbol) { x[2] += 20; }
+	if (board.field[1][0] == symbol && board.field[1][1] == symbol) { x[5] += 20; }
+	if (board.field[2][0] == symbol && board.field[2][1] == symbol) { x[8] += 20; }
 
-	if (plansza.pole[0][1] == znak && plansza.pole[0][2] == znak) { x[0] += 20; }
-	if (plansza.pole[1][1] == znak && plansza.pole[1][2] == znak) { x[3] += 20; }
-	if (plansza.pole[2][1] == znak && plansza.pole[2][2] == znak) { x[6] += 20; }
-	//
-	if (plansza.pole[0][0] == znak && plansza.pole[2][0] == znak) { x[3] += 20; }
-	if (plansza.pole[0][1] == znak && plansza.pole[2][1] == znak) { x[4] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[2][2] == znak) { x[5] += 20; }
+	if (board.field[0][1] == symbol && board.field[0][2] == symbol) { x[0] += 20; }
+	if (board.field[1][1] == symbol && board.field[1][2] == symbol) { x[3] += 20; }
+	if (board.field[2][1] == symbol && board.field[2][2] == symbol) { x[6] += 20; }
+	
+	if (board.field[0][0] == symbol && board.field[2][0] == symbol) { x[3] += 20; }
+	if (board.field[0][1] == symbol && board.field[2][1] == symbol) { x[4] += 20; }
+	if (board.field[0][2] == symbol && board.field[2][2] == symbol) { x[5] += 20; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[0][2] == znak) { x[1] += 20; }
-	if (plansza.pole[1][0] == znak && plansza.pole[1][2] == znak) { x[4] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[2][2] == znak) { x[7] += 20; }
-	//
-	if (plansza.pole[0][0] == znak && plansza.pole[1][1] == znak) { x[8] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[1][1] == znak) { x[6] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[1][1] == znak) { x[2] += 20; }
-	if (plansza.pole[2][2] == znak && plansza.pole[1][1] == znak) { x[0] += 20; }
+	if (board.field[0][0] == symbol && board.field[0][2] == symbol) { x[1] += 20; }
+	if (board.field[1][0] == symbol && board.field[1][2] == symbol) { x[4] += 20; }
+	if (board.field[2][0] == symbol && board.field[2][2] == symbol) { x[7] += 20; }
+	
+	if (board.field[0][0] == symbol && board.field[1][1] == symbol) { x[8] += 20; }
+	if (board.field[0][2] == symbol && board.field[1][1] == symbol) { x[6] += 20; }
+	if (board.field[2][0] == symbol && board.field[1][1] == symbol) { x[2] += 20; }
+	if (board.field[2][2] == symbol && board.field[1][1] == symbol) { x[0] += 20; }
 
 
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			if (plansza.pole[i][j] != 0) { x[i * 3 + j] = 0; }
+			if (board.field[i][j] != 0) { x[i * 3 + j] = 0; }
 		}
 	}
 
-	najwieksza = x[0];
+	mostValuableField = x[0];
 	for (int i = 1; i < 9; i++)
 	{
-		if (x[i] >= najwieksza) { najwieksza = x[i]; }
+		if (x[i] >= mostValuableField) { mostValuableField = x[i]; }
 	}
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { licznik++; }
+		if (x[i] == mostValuableField) { amountOfBestFields++; }
 	}
-	los = rand() % licznik;
+	randomField = rand() % amountOfBestFields;
 
-	int * liczby = new int[licznik];
+	int *bestFields = new int[amountOfBestFields];
 
 	int b = 0;
 	int n = 0;
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { liczby[b] = i; b++; }
+		if (x[i] == mostValuableField) { bestFields[b] = i; b++; }
 	}
 
-	n = liczby[los];
+	n = bestFields[randomField];
 
-	plansza.pole[n / 3][n % 3] = znak;
+	board.field[n / 3][n % 3] = symbol;
 }
 
-void bot4(char znakk)
+
+///<summary>
+///This bot assgns value to all fields and puts sign on the most valuable one.
+///Fields can change value if there are other marks around it.
+///It works better then 'bot3', but there is still a slight chance to win
+///If there are few fields with the same value, it chooses a random one
+///</summary>
+void bot4(char symboll)
 {
-	int los;
-	int najwieksza;
-	int licznik = 0;
+	int randField;
+	int mostValuableField;
+	int amountOfBestFields = 0;
 	int x[9];
 
-	int znak;
-	int znak2;
-	if (znakk == 'o') znak = 1;
-	else znak = 2;
+	int symbol;
+	int symbol2;
+	if (symboll == 'o') symbol = 1;
+	else symbol = 2;
 
-	if (znak == 1) znak2 = 2;
-	if (znak == 2) znak2 = 1;
+	if (symbol == 1) symbol2 = 2;
+	if (symbol == 2) symbol2 = 1;
 
 	x[4] = 11;
 	x[0] = 6;
@@ -262,206 +289,206 @@ void bot4(char znakk)
 	x[5] = 4;
 	x[7] = 4;
 
-	if (plansza.pole[0][0] == znak) { x[1] += 4; x[2] += 2; x[3] += 4; x[6] += 4; }
-	if (plansza.pole[0][2] == znak) { x[0] += 4; x[1] += 2; x[5] += 4; x[8] += 4; }
-	if (plansza.pole[2][0] == znak) { x[0] += 4; x[3] += 2; x[7] += 4; x[8] += 4; }
-	if (plansza.pole[2][2] == znak) { x[2] += 4; x[5] += 2; x[6] += 4; x[7] += 4; }
+	if (board.field[0][0] == symbol) { x[1] += 4; x[2] += 2; x[3] += 4; x[6] += 4; }
+	if (board.field[0][2] == symbol) { x[0] += 4; x[1] += 2; x[5] += 4; x[8] += 4; }
+	if (board.field[2][0] == symbol) { x[0] += 4; x[3] += 2; x[7] += 4; x[8] += 4; }
+	if (board.field[2][2] == symbol) { x[2] += 4; x[5] += 2; x[6] += 4; x[7] += 4; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[1][0] == znak) { x[6] += 20; }
-	if (plansza.pole[0][1] == znak && plansza.pole[1][1] == znak) { x[7] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[1][2] == znak) { x[8] += 20; }
+	if (board.field[0][0] == symbol && board.field[1][0] == symbol) { x[6] += 20; }
+	if (board.field[0][1] == symbol && board.field[1][1] == symbol) { x[7] += 20; }
+	if (board.field[0][2] == symbol && board.field[1][2] == symbol) { x[8] += 20; }
 
-	if (plansza.pole[1][0] == znak && plansza.pole[2][0] == znak) { x[0] += 20; }
-	if (plansza.pole[1][1] == znak && plansza.pole[2][1] == znak) { x[1] += 20; }
-	if (plansza.pole[1][2] == znak && plansza.pole[2][2] == znak) { x[2] += 20; }
+	if (board.field[1][0] == symbol && board.field[2][0] == symbol) { x[0] += 20; }
+	if (board.field[1][1] == symbol && board.field[2][1] == symbol) { x[1] += 20; }
+	if (board.field[1][2] == symbol && board.field[2][2] == symbol) { x[2] += 20; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[0][1] == znak) { x[2] += 20; }
-	if (plansza.pole[1][0] == znak && plansza.pole[1][1] == znak) { x[5] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[2][1] == znak) { x[8] += 20; }
+	if (board.field[0][0] == symbol && board.field[0][1] == symbol) { x[2] += 20; }
+	if (board.field[1][0] == symbol && board.field[1][1] == symbol) { x[5] += 20; }
+	if (board.field[2][0] == symbol && board.field[2][1] == symbol) { x[8] += 20; }
 
-	if (plansza.pole[0][1] == znak && plansza.pole[0][2] == znak) { x[0] += 20; }
-	if (plansza.pole[1][1] == znak && plansza.pole[1][2] == znak) { x[3] += 20; }
-	if (plansza.pole[2][1] == znak && plansza.pole[2][2] == znak) { x[6] += 20; }
-	//
-	if (plansza.pole[0][0] == znak && plansza.pole[2][0] == znak) { x[3] += 20; }
-	if (plansza.pole[0][1] == znak && plansza.pole[2][1] == znak) { x[4] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[2][2] == znak) { x[5] += 20; }
+	if (board.field[0][1] == symbol && board.field[0][2] == symbol) { x[0] += 20; }
+	if (board.field[1][1] == symbol && board.field[1][2] == symbol) { x[3] += 20; }
+	if (board.field[2][1] == symbol && board.field[2][2] == symbol) { x[6] += 20; }
+	
+	if (board.field[0][0] == symbol && board.field[2][0] == symbol) { x[3] += 20; }
+	if (board.field[0][1] == symbol && board.field[2][1] == symbol) { x[4] += 20; }
+	if (board.field[0][2] == symbol && board.field[2][2] == symbol) { x[5] += 20; }
 
-	if (plansza.pole[0][0] == znak && plansza.pole[0][2] == znak) { x[1] += 20; }
-	if (plansza.pole[1][0] == znak && plansza.pole[1][2] == znak) { x[4] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[2][2] == znak) { x[7] += 20; }
-	//
-	if (plansza.pole[0][0] == znak && plansza.pole[1][1] == znak) { x[8] += 20; }
-	if (plansza.pole[0][2] == znak && plansza.pole[1][1] == znak) { x[6] += 20; }
-	if (plansza.pole[2][0] == znak && plansza.pole[1][1] == znak) { x[2] += 20; }
-	if (plansza.pole[2][2] == znak && plansza.pole[1][1] == znak) { x[0] += 20; }
+	if (board.field[0][0] == symbol && board.field[0][2] == symbol) { x[1] += 20; }
+	if (board.field[1][0] == symbol && board.field[1][2] == symbol) { x[4] += 20; }
+	if (board.field[2][0] == symbol && board.field[2][2] == symbol) { x[7] += 20; }
+	
+	if (board.field[0][0] == symbol && board.field[1][1] == symbol) { x[8] += 20; }
+	if (board.field[0][2] == symbol && board.field[1][1] == symbol) { x[6] += 20; }
+	if (board.field[2][0] == symbol && board.field[1][1] == symbol) { x[2] += 20; }
+	if (board.field[2][2] == symbol && board.field[1][1] == symbol) { x[0] += 20; }
 
 
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[1][0] == znak2) { x[6] += 10; }
-	if (plansza.pole[0][1] == znak2 && plansza.pole[1][1] == znak2) { x[7] += 10; }
-	if (plansza.pole[0][2] == znak2 && plansza.pole[1][2] == znak2) { x[8] += 10; }
+	if (board.field[0][0] == symbol2 && board.field[1][0] == symbol2) { x[6] += 10; }
+	if (board.field[0][1] == symbol2 && board.field[1][1] == symbol2) { x[7] += 10; }
+	if (board.field[0][2] == symbol2 && board.field[1][2] == symbol2) { x[8] += 10; }
 
-	if (plansza.pole[1][0] == znak2 && plansza.pole[2][0] == znak2) { x[0] += 10; }
-	if (plansza.pole[1][1] == znak2 && plansza.pole[2][1] == znak2) { x[1] += 10; }
-	if (plansza.pole[1][2] == znak2 && plansza.pole[2][2] == znak2) { x[2] += 10; }
+	if (board.field[1][0] == symbol2 && board.field[2][0] == symbol2) { x[0] += 10; }
+	if (board.field[1][1] == symbol2 && board.field[2][1] == symbol2) { x[1] += 10; }
+	if (board.field[1][2] == symbol2 && board.field[2][2] == symbol2) { x[2] += 10; }
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[0][1] == znak2) { x[2] += 10; }
-	if (plansza.pole[1][0] == znak2 && plansza.pole[1][1] == znak2) { x[5] += 10; }
-	if (plansza.pole[2][0] == znak2 && plansza.pole[2][1] == znak2) { x[8] += 10; }
+	if (board.field[0][0] == symbol2 && board.field[0][1] == symbol2) { x[2] += 10; }
+	if (board.field[1][0] == symbol2 && board.field[1][1] == symbol2) { x[5] += 10; }
+	if (board.field[2][0] == symbol2 && board.field[2][1] == symbol2) { x[8] += 10; }
 
-	if (plansza.pole[0][1] == znak2 && plansza.pole[0][2] == znak2) { x[0] += 10; }
-	if (plansza.pole[1][1] == znak2 && plansza.pole[1][2] == znak2) { x[3] += 10; }
-	if (plansza.pole[2][1] == znak2 && plansza.pole[2][2] == znak2) { x[6] += 10; }
+	if (board.field[0][1] == symbol2 && board.field[0][2] == symbol2) { x[0] += 10; }
+	if (board.field[1][1] == symbol2 && board.field[1][2] == symbol2) { x[3] += 10; }
+	if (board.field[2][1] == symbol2 && board.field[2][2] == symbol2) { x[6] += 10; }
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[2][0] == znak2) { x[3] += 10; }
-	if (plansza.pole[0][1] == znak2 && plansza.pole[2][1] == znak2) { x[4] += 10; }
-	if (plansza.pole[0][2] == znak2 && plansza.pole[2][2] == znak2) { x[5] += 10; }
+	if (board.field[0][0] == symbol2 && board.field[2][0] == symbol2) { x[3] += 10; }
+	if (board.field[0][1] == symbol2 && board.field[2][1] == symbol2) { x[4] += 10; }
+	if (board.field[0][2] == symbol2 && board.field[2][2] == symbol2) { x[5] += 10; }
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[0][2] == znak2) { x[1] += 10; }
-	if (plansza.pole[1][0] == znak2 && plansza.pole[1][2] == znak2) { x[4] += 10; }
-	if (plansza.pole[2][0] == znak2 && plansza.pole[2][2] == znak2) { x[7] += 10; }
+	if (board.field[0][0] == symbol2 && board.field[0][2] == symbol2) { x[1] += 10; }
+	if (board.field[1][0] == symbol2 && board.field[1][2] == symbol2) { x[4] += 10; }
+	if (board.field[2][0] == symbol2 && board.field[2][2] == symbol2) { x[7] += 10; }
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[1][1] == znak2) { x[8] += 10; }
-	if (plansza.pole[0][2] == znak2 && plansza.pole[1][1] == znak2) { x[6] += 10; }
-	if (plansza.pole[2][0] == znak2 && plansza.pole[1][1] == znak2) { x[2] += 10; }
-	if (plansza.pole[2][2] == znak2 && plansza.pole[1][1] == znak2) { x[0] += 10; }
+	if (board.field[0][0] == symbol2 && board.field[1][1] == symbol2) { x[8] += 10; }
+	if (board.field[0][2] == symbol2 && board.field[1][1] == symbol2) { x[6] += 10; }
+	if (board.field[2][0] == symbol2 && board.field[1][1] == symbol2) { x[2] += 10; }
+	if (board.field[2][2] == symbol2 && board.field[1][1] == symbol2) { x[0] += 10; }
 
-	if (plansza.pole[0][0] == znak2 && plansza.pole[2][2] == znak2) { x[1] += 3; x[3] += 3; x[5] += 3; x[7] += 3; }
-	if (plansza.pole[0][2] == znak2 && plansza.pole[2][0] == znak2) { x[1] += 3; x[3] += 3; x[5] += 3; x[7] += 3; }
+	if (board.field[0][0] == symbol2 && board.field[2][2] == symbol2) { x[1] += 3; x[3] += 3; x[5] += 3; x[7] += 3; }
+	if (board.field[0][2] == symbol2 && board.field[2][0] == symbol2) { x[1] += 3; x[3] += 3; x[5] += 3; x[7] += 3; }
 
 
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			if (plansza.pole[i][j] != 0) { x[i * 3 + j] = 0; }
+			if (board.field[i][j] != 0) { x[i * 3 + j] = 0; }
 		}
 	}
 
-	najwieksza = x[0];
+	mostValuableField = x[0];
 	for (int i = 1; i < 9; i++)
 	{
-		if (x[i] >= najwieksza) { najwieksza = x[i]; }
+		if (x[i] >= mostValuableField) { mostValuableField = x[i]; }
 	}
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { licznik++; }
+		if (x[i] == mostValuableField) { amountOfBestFields++; }
 	}
-	los = rand() % licznik;
+	randField = rand() % amountOfBestFields;
 
-	int * liczby = new int[licznik];
+	int *bestFields = new int[amountOfBestFields];
 
 	int b = 0;
 	int n = 0;
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (x[i] == najwieksza) { liczby[b] = i; b++; }
+		if (x[i] == mostValuableField) { bestFields[b] = i; b++; }
 	}
 
-	n = liczby[0];	//n = liczby[los]; - bedzie wybiera³ losowo spoœród najlepszych opcji
-	plansza.pole[n / 3][n % 3] = znak;
+	n = bestFields[0];
+	board.field[n / 3][n % 3] = symbol;
 
-	delete[] liczby;
+	delete[] bestFields;
 }
 
-void siecNeuronowa(char znakk)
+void neuralNetwork(char symboll)
 {
-	int znak;
-	if (znakk == 'o') znak = 1;
-	else znak = 2;
+	int symbol;
+	if (symboll == 'o') symbol = 1;
+	else symbol = 2;
 
-	static bool pierwszyRaz = true;
-	if (pierwszyRaz)
+	//Sets properties of the neural network before the first game
+	//If you want you can skip this step, neural network will be working with default properties
+	static bool firstGame = true;
+	if (firstGame)
 	{
-		bot.SetAmmountOfChildrens(1000);
-		bot.SetMutationRate(0.02);
-		bot.SetNextGenerationDescendantsRate(0.05);
-		bot.SetTestAmmount(6);
+		bot.SetAmmountOfChildrens(100);
+		bot.SetMutationRate(0.01);
+		bot.SetNextGenerationDescendantsPercentage(0.05);
+		bot.SetTestAmmount(10);
 		bot.Create(18, 12, 9);
-		pierwszyRaz = false;
+		firstGame = false;
 	}
 
-	if (plansza.koniec != 0)
+	if (board.gameStatus != 0)
 	{
-		float wygrana = 0;
-		if (plansza.koniec == znak) wygrana = 1;
-		if (plansza.koniec == 3) wygrana = 0.75;
-		bot.Update(wygrana);
+		float result = 0;
+		if (board.gameStatus == symbol) result = 1;
+		if (board.gameStatus == 3) result = 0.75;
+		bot.Update(result);
 
-		plansza.koniec = 0;
+		board.gameStatus = 0;
 	}
 
-
+	//Sets input values of the neural network
 	for (int i = 0; i < 9; i++)
 	{
-		if (plansza.pole[i % 3][i / 3] == 1)
+		if (board.field[i % 3][i / 3] == 1)
 			bot.Input(i, 1);
 		else bot.Input(i, 0);
 
-		if (plansza.pole[i % 3][i / 3] == 2)
+		if (board.field[i % 3][i / 3] == 2)
 			bot.Input(i + 9, 1);
 		else bot.Input(i + 9, 0);
 	}
 
-
-	float suma[9];
-
 	bot.CalculateOutputs();
-	
+
+	//Next lines of code search for the most valuable empty field, and place a symbol there
+	float sum[9];
 
 	for (int i = 0; i < 9; i++)
 	{
-		suma[i] = bot.Output(i);
+		sum[i] = bot.Output(i);
 	}
 
-	float max = -100000;
+	float mostValuableField = -100000;
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (suma[i] > max && plansza.pole[i % 3][i / 3] == 0) max = suma[i];
+		if (sum[i] > mostValuableField && board.field[i % 3][i / 3] == 0) mostValuableField = sum[i];
 	}
 
-	int licznik = 0;	//wybiera losowo output
-	int maxLiczby[9];
+	int iterator = 0;
+	int bestFields[9];
 
 	for (int i = 0; i < 9; i++)
 	{
-		if (suma[i] == max && plansza.pole[i % 3][i / 3] == 0)
+		if (sum[i] == mostValuableField && board.field[i % 3][i / 3] == 0)
 		{
-			maxLiczby[licznik] = i;
-			licznik++;
+			bestFields[iterator] = i;
+			iterator++;
 		}
 	}
 
-	int los = rand() % licznik;
-	int pole = maxLiczby[los];
+	int randField = rand() % iterator;
+	int field = bestFields[randField];
 
-	plansza.pole[pole % 3][pole / 3] = znak;
+	board.field[field % 3][field / 3] = symbol;
 }
 
 void stop()
 {
-	static char znak = '0';
-	static long int licznik = 0;
-	licznik++;
-	if (licznik % 10000 == 0)
+	static char symbol = '0';
+	static long int iterator = 0;
+	iterator++;
+	if (iterator % 10000 == 0)
 	{
-		if (_kbhit()) znak = _getwch();
+		if (_kbhit()) symbol = _getwch();
 	}
 
-	if (znak == 'p' || znak == 'P') stopp = true;
-	if (znak == 'o' || znak == 'O') stopp = false;
+	if (symbol == 'p' || symbol == 'P') stopp = true;
+	if (symbol == 'o' || symbol == 'O') stopp = false;
 	if (stopp)
 	{
-		plansza.Rysuj();
-		plansza.liczWygrane();
-		znak = _getwch();
+		board.Draw();
+		board.ShowWinRate();
+		symbol = _getwch();
 
-		if (znak == 'l' || znak == 'L') stopp2 = true;
-		if (znak == 'k' || znak == 'K') stopp2 = false;
+		if (symbol == 'l' || symbol == 'L') stopp2 = true;
+		if (symbol == 'k' || symbol == 'K') stopp2 = false;
 	}
-
 }

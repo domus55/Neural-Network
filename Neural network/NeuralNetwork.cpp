@@ -2,8 +2,7 @@
 
 NeuralNetwork::NeuralNetwork(int layer1, int layer2, int layer3, int layer4, int layer5, int layer6)
 {
-	srand(time(NULL));
-
+	//srand(time(NULL));
 	AddNeurons(layer1, layer2);
 
 	if(layer3 == 0) AddNeurons(layer2, 1);
@@ -32,6 +31,8 @@ NeuralNetwork::NeuralNetwork(int layer1, int layer2, int layer3, int layer4, int
 	this->layer2 = layer2;
 	this->layer3 = layer3;
 	this->layer4 = layer4;
+	this->layer5 = layer5;
+	this->layer6 = layer6;
 }
 
 void NeuralNetwork::Copy(NeuralNetwork neuralNetwork2)
@@ -64,6 +65,43 @@ void NeuralNetwork::CalculateTheOutput()
 	if(layer4 != 0) CalculateNextLayerValue(layer3, layer4, layer1 + layer2);
 	if(layer5 != 0) CalculateNextLayerValue(layer4, layer5, layer1 + layer2 + layer3);
 	if(layer6 != 0) CalculateNextLayerValue(layer5, layer6, layer1 + layer2 + layer3 + layer4);
+
+	//show values and weights of the first 3 layers
+	/*if (rand() % 50000 == 0) {
+
+		std::cout << "\n";
+
+		for (int i = 0; i < layer1; i++)
+		{
+			std::cout << neuron[i].Output() << "\n";
+			for (int j = 0; j < layer2; j++)
+			{
+				std::cout << "\t" << neuron[i].Output(j) << "\n";
+			}
+			std::cout << "\n";
+		}
+
+		std::cout << "\n--------------------\n";
+
+		for (int i = 0; i < layer2; i++)
+		{
+			std::cout << neuron[i + layer1].Output() << "\n";
+			for (int j = 0; j < layer3; j++)
+			{
+				std::cout << "\t" << neuron[i + layer1].Output(j) << "\n";
+			}
+			std::cout << "\n";
+		}
+
+		std::cout << "\n";
+
+		for (int i = 0; i < layer3; i++)
+		{
+			std::cout << neuron[i + layer1 + layer2].Output() << " ";
+		}
+
+		std::cout << "\n\n";
+	}*/
 }
 
 float NeuralNetwork::Output(int neuronId)
@@ -73,7 +111,6 @@ float NeuralNetwork::Output(int neuronId)
 	if(layer5 == 0) return neuron[layer1 + layer2 + layer3 + neuronId].Output();
 	if(layer6 == 0) return neuron[layer1 + layer2 + layer3 + layer4 + neuronId].Output();
 	else			return neuron[layer1 + layer2 + layer3 + layer4 + layer5 + neuronId].Output();
-	
 }
 
 void NeuralNetwork::SetMutationRate(float rate)
@@ -102,24 +139,16 @@ void NeuralNetwork::Mutate()
 
 void NeuralNetwork::CalculateNextLayerValue(int layer1, int layer2, int firstNeuronId)
 {
-	float *suma = new float[layer2];
-
 	for (int i = 0; i < layer2; i++)
 	{
-		suma[i] = 0;
-	}
-
-	for (int i = 0; i < layer2; i++)
-	{
+		float sum = 0;
 		for (int j = 0; j < layer1; j++)
 		{
-			suma[i] += neuron[j].Output(i);
+			sum += neuron[j + firstNeuronId].Output(i);
 		}
 
-		neuron[layer1 + firstNeuronId + i].Input(suma[i]);
+		neuron[layer1 + firstNeuronId + i].Input(sum);
 	}
-
-	delete[]suma;
 }
 
 

@@ -6,9 +6,7 @@ Neuron::Neuron(int amountOfWeights)
 	this->amountOfWeights = amountOfWeights;
 	//std::cout << "a";
 	weight = new float[amountOfWeights];
-
 	MutateAllWeights();
-
 	bias = (rand() % 10000 - 5000) / 5000.0;
 }
 
@@ -67,6 +65,7 @@ void Neuron::SetMutationRate(float percentage)
 
 float Neuron::Output(int number)
 {
+	//return value * weight[number];
 	return value * weight[number] + bias;
 }
 
