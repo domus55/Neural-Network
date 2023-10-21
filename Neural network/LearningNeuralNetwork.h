@@ -4,20 +4,25 @@
 #include <math.h>
 #include "NeuralNetwork.h"
 
-class NeuralNetworkBot
+//TODO: consider changing class name
+class LearningNeuralNetwork
 {
 public:
-	void Create(unsigned int layer1, unsigned int layer2, unsigned int layer3 = 0, unsigned int layer4 = 0, unsigned int layer5 = 0, unsigned int layer6 = 0);
-	void SetAmmountOfChildrens(int ammount);
+	static int generation;
+	void Create(std::initializer_list<unsigned int> layers);
+	void SetAmmountOfChildren(int ammount);
 	void SetMutationRate(float rate);
+	///<summary>
+	/// By increasing test ammount neural network will be more precise, but will learn slower. Set it to 1 if there is nothing random in it's task
+	///</summary>
 	void SetTestAmmount(int ammount);
 
 	///<summary>
-	/// How many percentage of all children will be the base to next generation
+	/// Percentage of all children that will be the base to next generation
 	///</summary>
 	void SetNextGenerationDescendantsPercentage(float rate);
 	///<summary>
-	/// Use this after each game to let neural network know, how good it was
+	/// Use this after each game to let neural network know, how good it was, pass value between 0-1
 	///</summary>
 	void Update(float win);
 	void Input(int neuronId, float value);
@@ -25,7 +30,7 @@ public:
 	float Output(int neuronId);
 private:
 	std::vector <NeuralNetwork> neuralNetwork;
-	int ammountOfChildrens = 100;
+	int ammountOfChildren = 100;
 	float mutationRate = 0.05;
 	float nextGenerationDescendantsPercentage = 0.1;
 	int nextGenerationDescendants = 0;
@@ -33,7 +38,7 @@ private:
 	int activeTest;
 	//Neural network which is reciving inputs, and giving outputs
 	int activeNetwork = 0;
-	int * theBestNetworksIds;
+	std::vector <int> theBestNetworksIds;
 
 	void NextGeneration();
 	void FindTheBestNetworks();

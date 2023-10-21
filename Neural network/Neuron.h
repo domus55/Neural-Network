@@ -8,6 +8,8 @@ class Neuron
 {
 public:
 	Neuron(int amountOfWeights);
+	Neuron(Neuron&& n) noexcept;
+	Neuron(const Neuron& n);
 	///<summary>
 	///Sets neurone value
 	///</summary>
@@ -30,6 +32,7 @@ public:
 	///</summary>
 	float Output();
 	void Copy(Neuron neuron2);
+	~Neuron();
 
 private:
 	float mutationRate = 0.05;

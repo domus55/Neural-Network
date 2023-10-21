@@ -54,6 +54,11 @@ TEST_P(NeuronTest, Copy)
 	orginal.Input(0);
 
 	EXPECT_EQ(orginal.Output(), copy.Output());
+
+	orginal.Input(1);
+	copy.Input(1);
+
+	EXPECT_EQ(orginal.Output(0), copy.Output(0));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -8,11 +8,12 @@ class NeuralNetwork
 {
 public:
 	float WinRate = 0;
-
-	NeuralNetwork(int layer1, int layer2, int layer3 = 0, int layer4 = 0, int layer5 = 0, int layer6 = 0);
+	NeuralNetwork(std::initializer_list<unsigned int> layers);
 	void Copy(NeuralNetwork neuralNetwork2);
 	void Input(int neuron, int value);
+	//You need to you is before calling Output(int) method
 	void CalculateTheOutput();
+	//Get output from neuron
 	float Output(int neuron);
 	void SetMutationRate(float rate);
 	void Merge(NeuralNetwork neuralNetwork2);
@@ -22,13 +23,8 @@ private:
 	std::vector <Neuron> neuron;
 	float mutationRate = 0.05;
 	//Ammount of neurons in each layer
-	int layer1 = 0;
-	int layer2 = 0;
-	int layer3 = 0;
-	int layer4 = 0;
-	int layer5 = 0;
-	int layer6 = 0;
+	std::vector <unsigned int> layer;
 	void AddNeurons(int ammount, int ammountOfWeights);
-	void CalculateNextLayerValue(int layer1, int layer2, int firstNeuronId);
+	void CalculateNextLayerValue(int prevLayerSize, int nextLayerSize, int firstNeuronIndex);
 };
 

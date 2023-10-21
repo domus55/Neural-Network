@@ -27,7 +27,7 @@
     <ClCompile Include="Neuron.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="NeuralNetworkBot.cpp">
+    <ClCompile Include="LearningNeuralNetwork.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="Board.cpp">
@@ -50,7 +50,7 @@
     <ClInclude Include="Neuron.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="NeuralNetworkBot.h">
+    <ClInclude Include="LearningNeuralNetwork.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="Board.h">

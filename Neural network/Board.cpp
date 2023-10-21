@@ -1,4 +1,5 @@
 #include "Board.h"
+#include "LearningNeuralNetwork.h"
 
 using namespace std;
 
@@ -211,23 +212,21 @@ void Board::ShowWinRate()
 	int circle = 0;
 	int cross = 0;
 	int totalGames = gameResults.size();
-
-	for (int i = 0; i < totalGames; i++)
-	{
-		if (gameResults[i] == 0) draw++;
-		if (gameResults[i] == 1) circle++;
-		if (gameResults[i] == 2) cross++;
-	}
-
 	if (totalGames == 0) totalGames = 1;
 
-	//cout << "Gen: " << Neuron::gen <<"\n";
+	for (int resoult : gameResults)
+	{
+		if (resoult == 0) draw++;
+		if (resoult == 1) circle++;
+		if (resoult == 2) cross++;
+	}
+
+	cout << "Gen: " << LearningNeuralNetwork::generation <<"\n";
 	cout << "Cross win rate: " << round(cross * 1000 / (float) totalGames) / 10.0 << "%" << "\n";
 	cout << "Circle win rate: " << round(circle * 1000 / (float) totalGames) / 10.0 << "%" << "\n";
 	cout << "Draw: " << round(draw * 1000 / (float) totalGames) / 10.0 << "%" << "\n";
 	cout << "\n";
 }
-
 
 void Board::ClearBoard()
 {

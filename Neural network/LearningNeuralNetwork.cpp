@@ -1,44 +1,48 @@
-#include "NeuralNetworkBot.h"
+#include "LearningNeuralNetwork.h"
 
-void NeuralNetworkBot::Create(unsigned int layer1, unsigned int layer2, unsigned int layer3, unsigned int layer4, unsigned int layer5, unsigned int layer6)
+int LearningNeuralNetwork::generation = 1;
+
+void LearningNeuralNetwork::Create(std::initializer_list<unsigned int> layers)
 {
-	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildrens);
-	theBestNetworksIds = new int[nextGenerationDescendants];
+	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
+	theBestNetworksIds.resize(nextGenerationDescendants);
 
 	for (int i = 0; i < nextGenerationDescendants; i++)
 	{
 		theBestNetworksIds[i] = 0;
 	}
 
-	for (int i = 0; i < ammountOfChildrens; i++)
+	for (int i = 0; i < ammountOfChildren; i++)
 	{
-		NeuralNetwork n(layer1, layer2, layer3, layer4, layer5, layer6);
+		NeuralNetwork n(layers);
 		n.SetMutationRate(mutationRate);
 		neuralNetwork.push_back(n);
 	}
 }
 
-void NeuralNetworkBot::SetAmmountOfChildrens(int ammount)
+void LearningNeuralNetwork::SetAmmountOfChildren(int ammount)
 {
-	ammountOfChildrens = ammount;
+	ammountOfChildren = ammount;
 }
 
-void NeuralNetworkBot::SetMutationRate(float rate)
+void LearningNeuralNetwork::SetMutationRate(float rate)
 {
 	mutationRate = rate;
 }
 
-void NeuralNetworkBot::SetTestAmmount(int ammount)
+void LearningNeuralNetwork::SetTestAmmount(int ammount)
 {
 	testAmmount = ammount;
 }
 
-void NeuralNetworkBot::SetNextGenerationDescendantsPercentage(float rate)
+void LearningNeuralNetwork::SetNextGenerationDescendantsPercentage(float rate)
 {
+	if (rate < 0 || rate > 1)
+		throw std::invalid_argument("Descendants percentage needs to be between 0-1");
 	nextGenerationDescendantsPercentage = rate;
 }
 
-void NeuralNetworkBot::Update(float win)
+void LearningNeuralNetwork::Update(float win)
 {
 	if (activeTest == 0)
 	{
@@ -59,42 +63,40 @@ void NeuralNetworkBot::Update(float win)
 	}
 	
 
-	if (activeNetwork >= ammountOfChildrens)
+	if (activeNetwork >= ammountOfChildren)
 	{
 		activeNetwork = 0;
 		NextGeneration();
 	}
 }
 
-void NeuralNetworkBot::Input(int neuronId, float value)
+void LearningNeuralNetwork::Input(int neuronId, float value)
 {
 	neuralNetwork[activeNetwork].Input(neuronId, value);
 }
 
-void NeuralNetworkBot::CalculateOutputs()
+void LearningNeuralNetwork::CalculateOutputs()
 {
 	neuralNetwork[activeNetwork].CalculateTheOutput();
 }
 
-float NeuralNetworkBot::Output(int neuronId)
+float LearningNeuralNetwork::Output(int neuronId)
 {
 	return neuralNetwork[activeNetwork].Output(neuronId);
 }
 
-void NeuralNetworkBot::NextGeneration()
+void LearningNeuralNetwork::NextGeneration()
 {
 	FindTheBestNetworks();
 	MergeTheBestNetworks();
 	CopyTheBestNetworksToAllNetworks();
 	MutateAllNetworks();
+	generation++;
 }
 
-void NeuralNetworkBot::FindTheBestNetworks()
+void LearningNeuralNetwork::FindTheBestNetworks()
 {
 	float maxWinRate = 0;
-
-	//std::cout << "desc: " << nextGenerationDescendants << "\n";
-	//std::cout << "size: " << neuralNetwork.size() << "\n";
 
 	for (int i = 0; i < nextGenerationDescendants; i++)
 	{
@@ -109,9 +111,6 @@ void NeuralNetworkBot::FindTheBestNetworks()
 			}
 		}
 
-		//std::cout << "win race: " << maxWinRate << "\n";
-
-		//std::cout << neuralNetwork[theBestNetworksIds[i]].WinRate << "\n";
 		neuralNetwork[theBestNetworksIds[i]].WinRate *= -1;
 	}
 
@@ -121,47 +120,41 @@ void NeuralNetworkBot::FindTheBestNetworks()
 	}
 }
 
-void NeuralNetworkBot::MergeTheBestNetworks()
+void LearningNeuralNetwork::MergeTheBestNetworks()
 {
 	for (int i = 0; i < nextGenerationDescendants / 2; i++)
 	{
 		if (i != nextGenerationDescendants - i - 1)
 		{
-			//std::cout << i << "\t\t" << nextGenerationDescendants - i - 1 << "\n";
-			//std::cout << neuralNetwork[i].WinRate << "\n";
-			//std::cout << neuralNetwork[theBestNetworksIds[i]].WinRate << "\n";
-			//neuralNetwork[theBestNetworksIds[nextGenerationDescendants - i - 1]];
-
-
 			neuralNetwork[theBestNetworksIds[i]].Merge(neuralNetwork[theBestNetworksIds[nextGenerationDescendants - i - 1]]);
 		}
 	}
 }
 
-void NeuralNetworkBot::CopyTheBestNetworksToAllNetworks()
+void LearningNeuralNetwork::CopyTheBestNetworksToAllNetworks()
 {
-	for (int i = 0; i < ammountOfChildrens; i++)
+	for (int i = 0; i < ammountOfChildren; i++)
 	{
 		bool shouldContinue = false;
 		for (int j = 0; j < nextGenerationDescendants; j++)
 		{
-			if (theBestNetworksIds[j] == i) shouldContinue = true;
+			if (theBestNetworksIds[j] == i)
+			{
+				shouldContinue = true;
+			}
 		}
 
 		if (shouldContinue) continue;
 		int copyFromNeuron = rand() % (int)( ceil(nextGenerationDescendants / 2) );
-		
-		
-		//std::cout << neuralNetwork[theBestNetworksIds[copyFromNeuron]].WinRate <<"\n";
+
 		neuralNetwork[i].Copy( neuralNetwork[ theBestNetworksIds[copyFromNeuron] ] );
 	}
 }
 
-void NeuralNetworkBot::MutateAllNetworks()
+void LearningNeuralNetwork::MutateAllNetworks()
 {
-	for (int i = 0; i < ammountOfChildrens; i++)
+	for (int i = 0; i < ammountOfChildren; i++)
 	{
-		//std::cout << neuralNetwork[i].WinRate << "\n";
 		neuralNetwork[i].Mutate();
 	}
 }

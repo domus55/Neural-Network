@@ -1,38 +1,33 @@
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(int layer1, int layer2, int layer3, int layer4, int layer5, int layer6)
+NeuralNetwork::NeuralNetwork(std::initializer_list<unsigned int> layers)
 {
-	//srand(time(NULL));
-	AddNeurons(layer1, layer2);
+	int numOfLayers = layers.size();
+	layer.resize(numOfLayers);
 
-	if(layer3 == 0) AddNeurons(layer2, 1);
-	else
+	if (numOfLayers < 2)
+		throw std::invalid_argument("Neural Network needs at least 2 layers!");
+
+	int neuronsInTotal = 0;
+	int i = 0;
+	for (auto numOfNeurons : layers)
 	{
-		AddNeurons(layer2, layer3);
-		if (layer4 == 0) AddNeurons(layer3, 1);
+		this->layer[i] = numOfNeurons;
+		neuronsInTotal += numOfNeurons;
+
+		if (i + 1 == numOfLayers) //if it's the last layer
+		{
+			AddNeurons(numOfNeurons, 1);
+		}
 		else
 		{
-			AddNeurons(layer3, layer4);
-			if (layer5 == 0) AddNeurons(layer4, 1);
-			else
-			{
-				AddNeurons(layer4, layer5);
-				if (layer6 == 0) AddNeurons(layer5, 1);
-				else
-				{
-					AddNeurons(layer5, layer6);
-					AddNeurons(layer6, 1);
-				}
-			}
+			AddNeurons(numOfNeurons, layers.begin()[i + 1]);
 		}
+
+		i++;
 	}
 
-	this->layer1 = layer1;
-	this->layer2 = layer2;
-	this->layer3 = layer3;
-	this->layer4 = layer4;
-	this->layer5 = layer5;
-	this->layer6 = layer6;
+	neuron.reserve(neuronsInTotal);
 }
 
 void NeuralNetwork::Copy(NeuralNetwork neuralNetwork2)
@@ -49,7 +44,7 @@ void NeuralNetwork::AddNeurons(int ammount, int ammountOfWeights)
 	{
 		Neuron newNeuron(ammountOfWeights);
 		newNeuron.SetMutationRate(mutationRate);
-		neuron.push_back(newNeuron);
+		neuron.push_back(std::move(newNeuron));
 	}
 }
 
@@ -60,11 +55,12 @@ void NeuralNetwork::Input(int neuron, int value)
 
 void NeuralNetwork::CalculateTheOutput()
 {
-	CalculateNextLayerValue(layer1, layer2, 0);
-	if(layer3 != 0) CalculateNextLayerValue(layer2, layer3, layer1);
-	if(layer4 != 0) CalculateNextLayerValue(layer3, layer4, layer1 + layer2);
-	if(layer5 != 0) CalculateNextLayerValue(layer4, layer5, layer1 + layer2 + layer3);
-	if(layer6 != 0) CalculateNextLayerValue(layer5, layer6, layer1 + layer2 + layer3 + layer4);
+	int sumOfNeuronsBefore = 0;
+	for (int i = 0; i < layer.size() - 1; i++)
+	{
+		CalculateNextLayerValue(layer[i], layer[i + 1], sumOfNeuronsBefore);
+		sumOfNeuronsBefore += layer[i];
+	}
 
 	//show values and weights of the first 3 layers
 	/*if (rand() % 50000 == 0) {
@@ -106,11 +102,13 @@ void NeuralNetwork::CalculateTheOutput()
 
 float NeuralNetwork::Output(int neuronId)
 {
-	if(layer3 == 0) return neuron[layer1 + neuronId].Output();
-	if(layer4 == 0) return neuron[layer1 + layer2 + neuronId].Output();
-	if(layer5 == 0) return neuron[layer1 + layer2 + layer3 + neuronId].Output();
-	if(layer6 == 0) return neuron[layer1 + layer2 + layer3 + layer4 + neuronId].Output();
-	else			return neuron[layer1 + layer2 + layer3 + layer4 + layer5 + neuronId].Output();
+	int sumOfNeuronsBefore = 0;
+	for (int i = 0; i < layer.size() - 1; i++)
+	{
+		sumOfNeuronsBefore += layer[i];
+	}
+
+	return neuron[sumOfNeuronsBefore + neuronId].Output();
 }
 
 void NeuralNetwork::SetMutationRate(float rate)
@@ -137,17 +135,17 @@ void NeuralNetwork::Mutate()
 	}
 }
 
-void NeuralNetwork::CalculateNextLayerValue(int layer1, int layer2, int firstNeuronId)
+void NeuralNetwork::CalculateNextLayerValue(int prevLayerSize, int nextLayerSize, int firstNeuronIndex)
 {
-	for (int i = 0; i < layer2; i++)
+	for (int i = 0; i < nextLayerSize; i++)
 	{
 		float sum = 0;
-		for (int j = 0; j < layer1; j++)
+		for (int j = 0; j < prevLayerSize; j++)
 		{
-			sum += neuron[j + firstNeuronId].Output(i);
+			sum += neuron[j + firstNeuronIndex].Output(i);
 		}
 
-		neuron[layer1 + firstNeuronId + i].Input(sum);
+		neuron[prevLayerSize + firstNeuronIndex + i].Input(sum);
 	}
 }
 

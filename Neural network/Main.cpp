@@ -7,14 +7,14 @@
 #include <conio.h>
 #include "Board.h"
 #include "Neuron.h"
-#include "NeuralNetworkBot.h"
+#include "LearningNeuralNetwork.h"
 #include "gtest/gtest.h"
 
 using namespace std;
 
 Board board;
 
-NeuralNetworkBot bot;
+LearningNeuralNetwork bot;
 
 void stop();
 void bot1(char);
@@ -28,8 +28,8 @@ bool stopp2 = false; //usunac
 
 int main(int argc, char* argv[])
 {
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+	//testing::InitGoogleTest(&argc, argv);
+	//return RUN_ALL_TESTS();
 
 	srand(time(NULL));
 	int O_buffor, X_buffor;
@@ -102,7 +102,7 @@ void bot1(char symboll)
 }
 
 ///<summary>
-///This bot assgns value to all fields and puts sign on the most valuable one.
+///This bot assigns value to all fields and puts sign on the most valuable one.
 ///If there are few fields with the same value, it chooses a random one
 ///</summary>
 void bot2(char symboll)
@@ -405,11 +405,11 @@ void neuralNetwork(char symboll)
 	static bool firstGame = true;
 	if (firstGame)
 	{
-		bot.SetAmmountOfChildrens(100);
-		bot.SetMutationRate(0.01);
+		bot.SetAmmountOfChildren(100);
+		bot.SetMutationRate(0.05);
 		bot.SetNextGenerationDescendantsPercentage(0.05);
-		bot.SetTestAmmount(10);
-		bot.Create(18, 12, 9);
+		bot.SetTestAmmount(20);
+		bot.Create({ 18, 12, 9 });
 		firstGame = false;
 	}
 
@@ -417,7 +417,7 @@ void neuralNetwork(char symboll)
 	{
 		float result = 0;
 		if (board.gameStatus == symbol) result = 1;
-		if (board.gameStatus == 3) result = 0.75;
+		if (board.gameStatus == 3) result = 0.5;
 		bot.Update(result);
 
 		board.gameStatus = 0;
