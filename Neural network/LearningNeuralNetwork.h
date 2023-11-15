@@ -9,13 +9,19 @@ class LearningNeuralNetwork
 {
 public:
 	static int generation;
+	//TODO: Wrong argument handling in functions like update, input and others
+	//TODO: Fix all warnings
+	///<summary>
+	/// Creates LearningNeuralNetwork
+	/// Use after calling SetNextGenerationDescendantsPercentage(), SetAmmountOfChildren() and SetMutationRate()
+	///</summary>
 	void Create(std::initializer_list<unsigned int> layers);
-	void SetAmmountOfChildren(int ammount);
+	void SetAmmountOfChildren(unsigned int ammount);
 	void SetMutationRate(float rate);
 	///<summary>
 	/// By increasing test ammount neural network will be more precise, but will learn slower. Set it to 1 if there is nothing random in it's task
 	///</summary>
-	void SetTestAmmount(int ammount);
+	void SetTestAmmount(unsigned int ammount);
 
 	///<summary>
 	/// Percentage of all children that will be the base to next generation
@@ -25,19 +31,19 @@ public:
 	/// Use this after each game to let neural network know, how good it was, pass value between 0-1
 	///</summary>
 	void Update(float win);
-	void Input(int neuronId, float value);
+	void Input(unsigned int neuronId, float value);
 	void CalculateOutputs();
-	float Output(int neuronId);
+	float Output(unsigned int neuronId);
 private:
 	std::vector <NeuralNetwork> neuralNetwork;
-	int ammountOfChildren = 100;
-	float mutationRate = 0.05;
-	float nextGenerationDescendantsPercentage = 0.1;
-	int nextGenerationDescendants = 0;
-	int testAmmount = 1;
-	int activeTest;
+	unsigned int ammountOfChildren = 100;
+	float mutationRate = 0.05f;
+	float nextGenerationDescendantsPercentage = 0.1f;
+	unsigned int nextGenerationDescendants = 0;
+	unsigned int testAmmount = 1;
+	unsigned int activeTest;
 	//Neural network which is reciving inputs, and giving outputs
-	int activeNetwork = 0;
+	unsigned int activeNetwork = 0;
 	std::vector <int> theBestNetworksIds;
 
 	void NextGeneration();

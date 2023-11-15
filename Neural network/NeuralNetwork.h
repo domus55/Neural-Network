@@ -10,7 +10,7 @@ public:
 	float WinRate = 0;
 	NeuralNetwork(std::initializer_list<unsigned int> layers);
 	void Copy(NeuralNetwork neuralNetwork2);
-	void Input(int neuron, int value);
+	void Input(int neuron, float value);
 	//You need to you is before calling Output(int) method
 	void CalculateTheOutput();
 	//Get output from neuron
@@ -21,7 +21,7 @@ public:
 
 private:
 	std::vector <Neuron> neuron;
-	float mutationRate = 0.05;
+	float mutationRate;
 	//Ammount of neurons in each layer
 	std::vector <unsigned int> layer;
 	void AddNeurons(int ammount, int ammountOfWeights);

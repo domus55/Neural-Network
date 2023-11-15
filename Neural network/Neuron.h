@@ -35,7 +35,7 @@ public:
 	~Neuron();
 
 private:
-	float mutationRate = 0.05;
+	float mutationRate;
 	float value;
 	float *weight;
 	float bias;

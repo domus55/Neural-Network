@@ -127,14 +127,14 @@
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="LearningNeuralNetwork.cpp" />
     <ClCompile Include="Neuron.cpp" />
-    <ClCompile Include="Board.cpp" />
+    <ClCompile Include="SnakeGame.cpp" />
     <ClCompile Include="NeuronTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="LearningNeuralNetwork.h" />
     <ClInclude Include="Neuron.h" />
-    <ClInclude Include="Board.h" />
+    <ClInclude Include="SnakeGame.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

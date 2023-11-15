@@ -4,15 +4,22 @@ int LearningNeuralNetwork::generation = 1;
 
 void LearningNeuralNetwork::Create(std::initializer_list<unsigned int> layers)
 {
+	srand(time(NULL));
+
+	if (layers.size() < 2)
+	{
+		throw std::invalid_argument("Neural Network needs at least 2 layers!");
+	}
+	
 	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
 	theBestNetworksIds.resize(nextGenerationDescendants);
 
-	for (int i = 0; i < nextGenerationDescendants; i++)
+	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
 	{
 		theBestNetworksIds[i] = 0;
 	}
 
-	for (int i = 0; i < ammountOfChildren; i++)
+	for (unsigned int i = 0; i < ammountOfChildren; i++)
 	{
 		NeuralNetwork n(layers);
 		n.SetMutationRate(mutationRate);
@@ -20,7 +27,7 @@ void LearningNeuralNetwork::Create(std::initializer_list<unsigned int> layers)
 	}
 }
 
-void LearningNeuralNetwork::SetAmmountOfChildren(int ammount)
+void LearningNeuralNetwork::SetAmmountOfChildren(unsigned int ammount)
 {
 	ammountOfChildren = ammount;
 }
@@ -30,7 +37,7 @@ void LearningNeuralNetwork::SetMutationRate(float rate)
 	mutationRate = rate;
 }
 
-void LearningNeuralNetwork::SetTestAmmount(int ammount)
+void LearningNeuralNetwork::SetTestAmmount(unsigned int ammount)
 {
 	testAmmount = ammount;
 }
@@ -70,7 +77,7 @@ void LearningNeuralNetwork::Update(float win)
 	}
 }
 
-void LearningNeuralNetwork::Input(int neuronId, float value)
+void LearningNeuralNetwork::Input(unsigned int neuronId, float value)
 {
 	neuralNetwork[activeNetwork].Input(neuronId, value);
 }
@@ -80,7 +87,7 @@ void LearningNeuralNetwork::CalculateOutputs()
 	neuralNetwork[activeNetwork].CalculateTheOutput();
 }
 
-float LearningNeuralNetwork::Output(int neuronId)
+float LearningNeuralNetwork::Output(unsigned int neuronId)
 {
 	return neuralNetwork[activeNetwork].Output(neuronId);
 }
@@ -98,11 +105,11 @@ void LearningNeuralNetwork::FindTheBestNetworks()
 {
 	float maxWinRate = 0;
 
-	for (int i = 0; i < nextGenerationDescendants; i++)
+	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
 	{
 		maxWinRate = 0;
 
-		for (int j = 0; j < neuralNetwork.size(); j++)
+		for (unsigned int j = 0; j < neuralNetwork.size(); j++)
 		{
 			if (neuralNetwork[j].WinRate > maxWinRate)
 			{
@@ -114,7 +121,7 @@ void LearningNeuralNetwork::FindTheBestNetworks()
 		neuralNetwork[theBestNetworksIds[i]].WinRate *= -1;
 	}
 
-	for (int i = 0; i < nextGenerationDescendants; i++)
+	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
 	{
 		neuralNetwork[theBestNetworksIds[i]].WinRate *= -1;
 	}
@@ -122,7 +129,7 @@ void LearningNeuralNetwork::FindTheBestNetworks()
 
 void LearningNeuralNetwork::MergeTheBestNetworks()
 {
-	for (int i = 0; i < nextGenerationDescendants / 2; i++)
+	for (unsigned int i = 0; i < nextGenerationDescendants / 2; i++)
 	{
 		if (i != nextGenerationDescendants - i - 1)
 		{
@@ -133,10 +140,10 @@ void LearningNeuralNetwork::MergeTheBestNetworks()
 
 void LearningNeuralNetwork::CopyTheBestNetworksToAllNetworks()
 {
-	for (int i = 0; i < ammountOfChildren; i++)
+	for (unsigned int i = 0; i < ammountOfChildren; i++)
 	{
 		bool shouldContinue = false;
-		for (int j = 0; j < nextGenerationDescendants; j++)
+		for (unsigned int j = 0; j < nextGenerationDescendants; j++)
 		{
 			if (theBestNetworksIds[j] == i)
 			{
@@ -153,7 +160,7 @@ void LearningNeuralNetwork::CopyTheBestNetworksToAllNetworks()
 
 void LearningNeuralNetwork::MutateAllNetworks()
 {
-	for (int i = 0; i < ammountOfChildren; i++)
+	for (unsigned int i = 0; i < ammountOfChildren; i++)
 	{
 		neuralNetwork[i].Mutate();
 	}

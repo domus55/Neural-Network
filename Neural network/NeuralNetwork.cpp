@@ -5,9 +5,6 @@ NeuralNetwork::NeuralNetwork(std::initializer_list<unsigned int> layers)
 	int numOfLayers = layers.size();
 	layer.resize(numOfLayers);
 
-	if (numOfLayers < 2)
-		throw std::invalid_argument("Neural Network needs at least 2 layers!");
-
 	int neuronsInTotal = 0;
 	int i = 0;
 	for (auto numOfNeurons : layers)
@@ -32,7 +29,7 @@ NeuralNetwork::NeuralNetwork(std::initializer_list<unsigned int> layers)
 
 void NeuralNetwork::Copy(NeuralNetwork neuralNetwork2)
 {
-	for (int i = 0; i < neuron.size(); i++)
+	for (unsigned int i = 0; i < neuron.size(); i++)
 	{
 		neuron[i].Copy(neuralNetwork2.neuron[i]);
 	}
@@ -48,7 +45,7 @@ void NeuralNetwork::AddNeurons(int ammount, int ammountOfWeights)
 	}
 }
 
-void NeuralNetwork::Input(int neuron, int value)
+void NeuralNetwork::Input(int neuron, float value)
 {
 	this->neuron[neuron].Input(value);
 }
@@ -56,7 +53,7 @@ void NeuralNetwork::Input(int neuron, int value)
 void NeuralNetwork::CalculateTheOutput()
 {
 	int sumOfNeuronsBefore = 0;
-	for (int i = 0; i < layer.size() - 1; i++)
+	for (unsigned int i = 0; i < layer.size() - 1; i++)
 	{
 		CalculateNextLayerValue(layer[i], layer[i + 1], sumOfNeuronsBefore);
 		sumOfNeuronsBefore += layer[i];
@@ -103,7 +100,7 @@ void NeuralNetwork::CalculateTheOutput()
 float NeuralNetwork::Output(int neuronId)
 {
 	int sumOfNeuronsBefore = 0;
-	for (int i = 0; i < layer.size() - 1; i++)
+	for (unsigned int i = 0; i < layer.size() - 1; i++)
 	{
 		sumOfNeuronsBefore += layer[i];
 	}
@@ -120,7 +117,7 @@ void NeuralNetwork::Merge(NeuralNetwork neuralNetwork2)
 {
 	WinRate = (WinRate + neuralNetwork2.WinRate) / 2;
 
-	for (int i = 0; i < neuron.size(); i++)
+	for (unsigned int i = 0; i < neuron.size(); i++)
 	{
 		neuron[i].Merge(neuralNetwork2.neuron[i]);
 	}
@@ -128,7 +125,7 @@ void NeuralNetwork::Merge(NeuralNetwork neuralNetwork2)
 
 void NeuralNetwork::Mutate()
 {
-	for (int i = 0; i < neuron.size(); i++)
+	for (unsigned int i = 0; i < neuron.size(); i++)
 	{
 		neuron[i].SetMutationRate( (1 - WinRate) * mutationRate );
 		neuron[i].Mutate();
