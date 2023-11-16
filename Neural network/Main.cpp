@@ -1,11 +1,4 @@
 #include <iostream>
-#include <string>
-#include <windows.h>
-#include <cstdlib>
-#include <ctime>
-#include <cstdio>
-#include <conio.h>
-#include <algorithm>
 #include "SnakeGame.h"
 #include "Neuron.h"
 #include "LearningNeuralNetwork.h"
@@ -33,8 +26,8 @@ int main(int argc, char* argv[])
 	bot.SetAmmountOfChildren(200);//200
 	bot.SetMutationRate(0.05f);
 	bot.SetNextGenerationDescendantsPercentage(0.05f);
-	bot.SetTestAmmount(20);
-	bot.Create({ 6, 24, 3 });
+	bot.SetTestAmmount(10);
+	bot.Create({ 14, 6, 3 });
 
 	for (;;)
 	{
@@ -45,12 +38,21 @@ int main(int argc, char* argv[])
 			//std::cout << result << " ";
 		}
 
-		bot.Input(0, snake.getDistanceToObstacle(snake.TURN_LEFT));
-		bot.Input(1, snake.getDistanceToObstacle(snake.FORWARD));
-		bot.Input(2, snake.getDistanceToObstacle(snake.TURN_RIGHT));
-		bot.Input(3, snake.getDistanceToFood(snake.TURN_LEFT));
-		bot.Input(4, snake.getDistanceToFood(snake.FORWARD));
-		bot.Input(5, snake.getDistanceToFood(snake.TURN_RIGHT));
+
+		bot.Input(0, snake.getDistanceToObstacle(snake.TURN_HARD_LEFT));
+		bot.Input(1, snake.getDistanceToObstacle(snake.TURN_LEFT));
+		bot.Input(2, snake.getDistanceToObstacle(snake.TURN_SLIGHTLY_LEFT));
+		bot.Input(3, snake.getDistanceToObstacle(snake.FORWARD));
+		bot.Input(4, snake.getDistanceToObstacle(snake.TURN_SLIGHTLY_RIGHT));
+		bot.Input(5, snake.getDistanceToObstacle(snake.TURN_RIGHT));
+		bot.Input(6, snake.getDistanceToObstacle(snake.TURN_HARD_RIGHT));
+		bot.Input(7, snake.getDistanceToFood(snake.TURN_HARD_LEFT));
+		bot.Input(8, snake.getDistanceToFood(snake.TURN_LEFT));
+		bot.Input(9, snake.getDistanceToFood(snake.TURN_SLIGHTLY_LEFT));
+		bot.Input(10, snake.getDistanceToFood(snake.FORWARD));
+		bot.Input(11, snake.getDistanceToFood(snake.TURN_SLIGHTLY_RIGHT));
+		bot.Input(12, snake.getDistanceToFood(snake.TURN_RIGHT));
+		bot.Input(13, snake.getDistanceToFood(snake.TURN_HARD_RIGHT));
 
 		bot.CalculateOutputs();
 

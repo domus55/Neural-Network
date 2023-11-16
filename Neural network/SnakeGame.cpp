@@ -139,6 +139,42 @@ float SnakeGame::getDistanceToObstacle(moveDirection move)
 	return (distance + 1 - BOARD_SIZE) / (float)(BOARD_SIZE - 1) * -1;
 }
 
+float SnakeGame::getDistanceToObstacle(lookDirection look)
+{
+	/* lookDir is diagonal direction
+	* 0 - bottom right
+	* 1 - bottom left
+	* 2 - upper left
+	* 3 - upper right
+	*/
+	const int lookDir = static_cast<int>((currentDirection + look + 4) % 4);
+	int distance = 0;
+	vector2 checkField = headPosition;
+	bool clearField = true;
+	
+	do
+	{
+		if (lookDir == 0 || lookDir == 1)
+			checkField.y++;
+		else
+			checkField.y--;
+
+		if (lookDir == 1 || lookDir == 2)
+			checkField.x--;
+		else
+			checkField.x++;
+
+		if (board[checkField.x][checkField.y] ||
+			!(checkField.x >= 0 && checkField.y >= 0 && checkField.x < BOARD_SIZE && checkField.y < BOARD_SIZE))
+			clearField = false;
+		else
+			distance++;
+	}
+	while (clearField);
+	
+	return (distance + 1 - BOARD_SIZE) / (float)(BOARD_SIZE - 1) * -1;
+}
+
 int SnakeGame::getSize()
 {
 	return maxSize;
@@ -172,6 +208,47 @@ float SnakeGame::getDistanceToFood(moveDirection move)
 	return (distance - BOARD_SIZE) / (float)(BOARD_SIZE - 1) * -1;
 }
 
+float SnakeGame::getDistanceToFood(lookDirection look)
+{
+	/* lookDir is diagonal direction
+	* 0 - bottom right
+	* 1 - bottom left
+	* 2 - upper left
+	* 3 - upper right
+	*/
+	const int lookDir = static_cast<int>((currentDirection + look + 4) % 4);
+	int distance = 0;
+	vector2 checkField = headPosition;
+	bool clearField = true;
+	bool foundFood = false;
+
+	while(checkField.x >= 0 && checkField.y >= 0 && checkField.x < BOARD_SIZE && checkField.y < BOARD_SIZE)
+	{
+		if (lookDir == 0 || lookDir == 1)
+			checkField.y++;
+		else
+			checkField.y--;
+
+		if (lookDir == 1 || lookDir == 2)
+			checkField.x--;
+		else
+			checkField.x++;
+
+		if (foodPosition.x == checkField.x && foodPosition.y == checkField.y)
+		{
+			foundFood = true;
+			break;
+		}
+
+		distance++;
+	}
+
+	if (!foundFood)
+		distance = BOARD_SIZE - 1;
+
+	return (distance + 1 - BOARD_SIZE) / (float)(BOARD_SIZE - 1) * -1;
+}
+
 void SnakeGame::printCurrentDirection()
 {
 	if (currentDirection == snakeDirection::LEFT)
@@ -199,9 +276,10 @@ void SnakeGame::printBoard()
 		std::cout << "Gen: "<< LearningNeuralNetwork::generation << "\tAvarage size: " << avgSize << "\n";
 	}
 
+	//system("cls");
+
 	if ((!showBoard && snakeInstance % 1000 == 0 && _kbhit()) || (showBoard && _kbhit()))
 	{
-		
 		char symbol = ' ';
 		symbol = _getwch();
 		if (symbol == 'p' || symbol == 'P')
@@ -250,7 +328,12 @@ void SnakeGame::printBoard()
 	}
 	std::cout << "+\n";
 
-	/*std::cout << "\ndistance left: " << getDistanceToObstacle(moveDirection::TURN_LEFT);
+	/*std::cout << "\ndistance TURN_HARD_LEFT: " << getDistanceToObstacle(lookDirection::TURN_HARD_LEFT);
+	std::cout << "\ndistance TURN_SLIGHTLY_LEFT: " << getDistanceToObstacle(lookDirection::TURN_SLIGHTLY_LEFT);
+	std::cout << "\ndistance TURN_SLIGHTLY_RIGHT: " << getDistanceToObstacle(lookDirection::TURN_SLIGHTLY_RIGHT);
+	std::cout << "\ndistance TURN_HARD_RIGHT: " << getDistanceToObstacle(lookDirection::TURN_HARD_RIGHT);
+
+	std::cout << "\ndistance left: " << getDistanceToObstacle(moveDirection::TURN_LEFT);
 	std::cout << "\ndistance forward: " << getDistanceToObstacle(moveDirection::FORWARD);
 	std::cout << "\ndistance right: " << getDistanceToObstacle(moveDirection::TURN_RIGHT);
 
@@ -258,7 +341,12 @@ void SnakeGame::printBoard()
 
 	std::cout << "\ndistance left: " << getDistanceToFood(moveDirection::TURN_LEFT);
 	std::cout << "\ndistance forward: " << getDistanceToFood(moveDirection::FORWARD);
-	std::cout << "\ndistance right: " << getDistanceToFood(moveDirection::TURN_RIGHT);*/
+	std::cout << "\ndistance right: " << getDistanceToFood(moveDirection::TURN_RIGHT);
+
+	std::cout << "\ndistance TURN_HARD_LEFT: " << getDistanceToFood(lookDirection::TURN_HARD_LEFT);
+	std::cout << "\ndistance TURN_SLIGHTLY_LEFT: " << getDistanceToFood(lookDirection::TURN_SLIGHTLY_LEFT);
+	std::cout << "\ndistance TURN_SLIGHTLY_RIGHT: " << getDistanceToFood(lookDirection::TURN_SLIGHTLY_RIGHT);
+	std::cout << "\ndistance TURN_HARD_RIGHT: " << getDistanceToFood(lookDirection::TURN_HARD_RIGHT);*/
 }
 
 void SnakeGame::createFood()

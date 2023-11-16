@@ -6,8 +6,6 @@
 #include <conio.h>
 #include "LearningNeuralNetwork.h"
 
-#define MAX_TTL 200
-
 class SnakeGame
 {
 public:
@@ -24,13 +22,22 @@ public:
 		TURN_RIGHT,
 	};
 
+	enum lookDirection
+	{
+		TURN_HARD_LEFT = 0,
+		TURN_SLIGHTLY_LEFT,
+		TURN_SLIGHTLY_RIGHT,
+		TURN_HARD_RIGHT
+	};
+
 	SnakeGame();
 	void restartGame();
 	void move(moveDirection);
 	//returns value in range 1-0 where 1 means really close, and 0 means far
 	float getDistanceToObstacle(moveDirection);
-	//returns value in range 1-0 where 1 means really close, and 0 means far
+	float getDistanceToObstacle(lookDirection);
 	float getDistanceToFood(moveDirection);
+	float getDistanceToFood(lookDirection);
 	void printBoard();
 	void printCurrentDirection();
 	int getSize();
@@ -56,6 +63,7 @@ private:
 	};
 
 	static constexpr int BOARD_SIZE = 21;
+	static constexpr int MAX_TTL = 200;
 	int board[BOARD_SIZE][BOARD_SIZE];
 	vector2 headPosition;
 	std::vector<vector2> bodyPosition;

@@ -10,7 +10,6 @@ class LearningNeuralNetwork
 public:
 	static int generation;
 	//TODO: Wrong argument handling in functions like update, input and others
-	//TODO: Fix all warnings
 	///<summary>
 	/// Creates LearningNeuralNetwork
 	/// Use after calling SetNextGenerationDescendantsPercentage(), SetAmmountOfChildren() and SetMutationRate()
