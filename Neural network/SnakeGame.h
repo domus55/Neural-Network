@@ -39,7 +39,6 @@ public:
 	float getDistanceToFood(moveDirection);
 	float getDistanceToFood(lookDirection);
 	void printBoard(int generation);
-	void printCurrentDirection();
 	int getSize();
 	status gameStatus = GAME_IN_PROGRESS;
 	static constexpr int BOARD_SIZE = 21;

@@ -33,7 +33,14 @@ public:
 	///</summary>
 	void CalculateOutputs();
 	float Output(unsigned int neuronId);
-	void FinishLearning();
+
+	///<summary>
+	/// After calling that method LearningNeuralNetwork stops improving and 
+	/// uses the neural network with a highest winRate
+	/// Call after winRate is satysfying
+	///</summary>
+	void SetFinishLearning(bool finish);
+	bool GetFinishLearning();
 	int GetGeneration();
 	float GetBestWinRate();
 

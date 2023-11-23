@@ -45,6 +45,9 @@ void LearningNeuralNetwork::SetTestAmmount(unsigned int ammount)
 
 void LearningNeuralNetwork::Update(float win)
 {
+	if (finishLearning)
+		return;
+
 	if (activeTest == 0)
 	{
 		neuralNetwork[activeNetwork].WinRate = win;
@@ -95,9 +98,20 @@ float LearningNeuralNetwork::Output(unsigned int neuronId)
 		return neuralNetwork[activeNetwork].Output(neuronId);
 }
 
-void LearningNeuralNetwork::FinishLearning()
+void LearningNeuralNetwork::SetFinishLearning(bool finish)
 {
-	finishLearning = true;
+	if (finish)
+	{
+		activeTest = 0;
+		activeNetwork = 0;
+	}
+
+	finishLearning = finish;
+}
+
+bool LearningNeuralNetwork::GetFinishLearning()
+{
+	return finishLearning;
 }
 
 int LearningNeuralNetwork::GetGeneration()

@@ -10,16 +10,6 @@ int main(int argc, char* argv[])
 	//return RUN_ALL_TESTS();
 
 	SnakeGame snake;
-	
-	/*for (;;)
-	{
-		char move = _getwch();
-		if (move == 'a') snake.move(SnakeGame::TURN_LEFT);
-		if (move == 'w') snake.move(SnakeGame::FORWARD);
-		if (move == 'd') snake.move(SnakeGame::TURN_RIGHT);
-	}*/
-
-	
 	LearningNeuralNetwork bot({ 14, 6, 3 }, 200);
 
 	//Sets properties of the neural network, use before the first game
@@ -63,13 +53,10 @@ int main(int argc, char* argv[])
 		snake.move(static_cast<SnakeGame::moveDirection>(max - 1));
 		snake.printBoard(bot.GetGeneration());
 
-		static bool finish = false;
-
-		if (bot.GetBestWinRate() > 0.1f && !finish)
+		if (bot.GetBestWinRate() > 0.1f && !bot.GetFinishLearning())
 		{
-			std::cout<<"Finish learning!";
-			finish = true;
-			bot.FinishLearning();
+			std::cout<<"\n\nFinish learning!\n";
+			bot.SetFinishLearning(true);
 		}
 	}
 

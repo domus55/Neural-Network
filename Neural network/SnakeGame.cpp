@@ -34,7 +34,7 @@ void SnakeGame::move(moveDirection move)
 	gameStatus = GAME_IN_PROGRESS;
 	TTL--;
 
-	//move body
+	//Move body
 	for (int i = bodyPosition.size() - 1; i > 0; i--)
 	{
 		bodyPosition[i] = bodyPosition[i - 1];
@@ -44,7 +44,7 @@ void SnakeGame::move(moveDirection move)
 		bodyPosition[0] = headPosition;
 	}
 
-	//move head
+	//Move head
 	currentDirection = static_cast<snakeDirection>((currentDirection + move + 4) % 4);
 
 	if (currentDirection == snakeDirection::LEFT)
@@ -64,7 +64,7 @@ void SnakeGame::move(moveDirection move)
 		headPosition.y++;
 	}
 
-	// Write to board
+	//Write to board
 	for (int i = 0; i < BOARD_SIZE; i++)
 	{
 		for (int j = 0; j < BOARD_SIZE; j++)
@@ -249,34 +249,12 @@ float SnakeGame::getDistanceToFood(lookDirection look)
 	return (distance + 1 - BOARD_SIZE) / (float)(BOARD_SIZE - 1) * -1;
 }
 
-void SnakeGame::printCurrentDirection()
-{
-	if (currentDirection == snakeDirection::LEFT)
-	{
-		std::cout << "Left";
-	}
-	if (currentDirection == snakeDirection::UP)
-	{
-		std::cout << "UP";
-	}
-	if (currentDirection == snakeDirection::RIGHT)
-	{
-		std::cout << "RIGHT";
-	}
-	if (currentDirection == snakeDirection::DOWN)
-	{
-		std::cout << "DOWN";
-	}
-}
-
 void SnakeGame::printBoard(int generation)
 {
-	if (snakeInstance % 1000 == 0 && TTL == MAX_TTL - 1 && bodyPosition.size() == 0)
+	if (!showBoard && snakeInstance % 1000 == 0 && TTL == MAX_TTL - 1 && bodyPosition.size() == 0)
 	{
 		std::cout << "Gen: "<< generation << "\tAvarage size: " << avgSize << "\n";
 	}
-
-	//system("cls");
 
 	if ((!showBoard && snakeInstance % 1000 == 0 && _kbhit()) || (showBoard && _kbhit()))
 	{
@@ -297,7 +275,6 @@ void SnakeGame::printBoard(int generation)
 	//Used to get rid of screen flickering
 	std::cout.flush();
 	SetConsoleCursorPosition(hOut, { (SHORT)0, (SHORT)0 });
-	//printCurrentDirection();
 	
 	for (int i = 0; i < BOARD_SIZE; i++)
 	{
@@ -327,26 +304,6 @@ void SnakeGame::printBoard(int generation)
 		std::cout << "--";
 	}
 	std::cout << "+\n";
-
-	/*std::cout << "\ndistance TURN_HARD_LEFT: " << getDistanceToObstacle(lookDirection::TURN_HARD_LEFT);
-	std::cout << "\ndistance TURN_SLIGHTLY_LEFT: " << getDistanceToObstacle(lookDirection::TURN_SLIGHTLY_LEFT);
-	std::cout << "\ndistance TURN_SLIGHTLY_RIGHT: " << getDistanceToObstacle(lookDirection::TURN_SLIGHTLY_RIGHT);
-	std::cout << "\ndistance TURN_HARD_RIGHT: " << getDistanceToObstacle(lookDirection::TURN_HARD_RIGHT);
-
-	std::cout << "\ndistance left: " << getDistanceToObstacle(moveDirection::TURN_LEFT);
-	std::cout << "\ndistance forward: " << getDistanceToObstacle(moveDirection::FORWARD);
-	std::cout << "\ndistance right: " << getDistanceToObstacle(moveDirection::TURN_RIGHT);
-
-	std::cout << "\n\nFood distance: ";
-
-	std::cout << "\ndistance left: " << getDistanceToFood(moveDirection::TURN_LEFT);
-	std::cout << "\ndistance forward: " << getDistanceToFood(moveDirection::FORWARD);
-	std::cout << "\ndistance right: " << getDistanceToFood(moveDirection::TURN_RIGHT);
-
-	std::cout << "\ndistance TURN_HARD_LEFT: " << getDistanceToFood(lookDirection::TURN_HARD_LEFT);
-	std::cout << "\ndistance TURN_SLIGHTLY_LEFT: " << getDistanceToFood(lookDirection::TURN_SLIGHTLY_LEFT);
-	std::cout << "\ndistance TURN_SLIGHTLY_RIGHT: " << getDistanceToFood(lookDirection::TURN_SLIGHTLY_RIGHT);
-	std::cout << "\ndistance TURN_HARD_RIGHT: " << getDistanceToFood(lookDirection::TURN_HARD_RIGHT);*/
 }
 
 void SnakeGame::createFood()
