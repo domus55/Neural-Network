@@ -269,11 +269,11 @@ void SnakeGame::printCurrentDirection()
 	}
 }
 
-void SnakeGame::printBoard()
+void SnakeGame::printBoard(int generation)
 {
 	if (snakeInstance % 1000 == 0 && TTL == MAX_TTL - 1 && bodyPosition.size() == 0)
 	{
-		std::cout << "Gen: "<< LearningNeuralNetwork::generation << "\tAvarage size: " << avgSize << "\n";
+		std::cout << "Gen: "<< generation << "\tAvarage size: " << avgSize << "\n";
 	}
 
 	//system("cls");

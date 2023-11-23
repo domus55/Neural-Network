@@ -19,25 +19,21 @@ int main(int argc, char* argv[])
 		if (move == 'd') snake.move(SnakeGame::TURN_RIGHT);
 	}*/
 
-	//Sets properties of the neural network before the first game
-	//If you want you can skip this step, neural network will be working with default properties
-	LearningNeuralNetwork bot;
 	
-	bot.SetAmmountOfChildren(200);//200
-	bot.SetMutationRate(0.05f);
-	bot.SetNextGenerationDescendantsPercentage(0.05f);
+	LearningNeuralNetwork bot({ 14, 6, 3 }, 200);
+
+	//Sets properties of the neural network, use before the first game
+	//If you want you can skip this step, neural network will be working with default properties
+	bot.SetArguments(0.05f, 0.05f);
 	bot.SetTestAmmount(10);
-	bot.Create({ 14, 6, 3 });
 
 	for (;;)
 	{
 		if (snake.gameStatus == snake.GAME_END)
 		{
 			float result = static_cast<float>(snake.getSize());
-			bot.Update(result / (float)100.0);	//TODO change to board size
-			//std::cout << result << " ";
+			bot.Update(result / (float)(snake.BOARD_SIZE * snake.BOARD_SIZE));
 		}
-
 
 		bot.Input(0, snake.getDistanceToObstacle(snake.TURN_HARD_LEFT));
 		bot.Input(1, snake.getDistanceToObstacle(snake.TURN_LEFT));
@@ -65,7 +61,16 @@ int main(int argc, char* argv[])
 		int max = std::distance(out, std::max_element(out, out + sizeof(out) / sizeof(int)));
 
 		snake.move(static_cast<SnakeGame::moveDirection>(max - 1));
-		snake.printBoard();
+		snake.printBoard(bot.GetGeneration());
+
+		static bool finish = false;
+
+		if (bot.GetBestWinRate() > 0.1f && !finish)
+		{
+			std::cout<<"Finish learning!";
+			finish = true;
+			bot.FinishLearning();
+		}
 	}
 
 	return 0;

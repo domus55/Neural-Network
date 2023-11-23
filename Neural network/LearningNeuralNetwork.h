@@ -3,52 +3,57 @@
 #include <vector>
 #include <math.h>
 #include "NeuralNetwork.h"
+#include <optional>
 
-//TODO: consider changing class name
 class LearningNeuralNetwork
 {
 public:
-	static int generation;
-	//TODO: Wrong argument handling in functions like update, input and others
+	LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren);
+
 	///<summary>
-	/// Creates LearningNeuralNetwork
-	/// Use after calling SetNextGenerationDescendantsPercentage(), SetAmmountOfChildren() and SetMutationRate()
+	/// Optional method, you can call it rigt after creating LearningNeuralNetwork to set argument
+	/// nextGenerationDescendantsPercentage - Percentage of descendants to pick while choosing which networks to merge
+	/// mutationPercentage - How much neural network should mutate
 	///</summary>
-	void Create(std::initializer_list<unsigned int> layers);
-	void SetAmmountOfChildren(unsigned int ammount);
-	void SetMutationRate(float rate);
+	void SetArguments(float nextGenerationDescendantsPercentage, float mutationPercentage);
+
 	///<summary>
 	/// By increasing test ammount neural network will be more precise, but will learn slower. Set it to 1 if there is nothing random in it's task
 	///</summary>
 	void SetTestAmmount(unsigned int ammount);
 
 	///<summary>
-	/// Percentage of all children that will be the base to next generation
-	///</summary>
-	void SetNextGenerationDescendantsPercentage(float rate);
-	///<summary>
 	/// Use this after each game to let neural network know, how good it was, pass value between 0-1
 	///</summary>
 	void Update(float win);
 	void Input(unsigned int neuronId, float value);
+
+	///<summary>
+	/// Use after providing all inputs and before calling Output() method to get correct outputs
+	///</summary>
 	void CalculateOutputs();
 	float Output(unsigned int neuronId);
+	void FinishLearning();
+	int GetGeneration();
+	float GetBestWinRate();
+
 private:
 	std::vector <NeuralNetwork> neuralNetwork;
+	NeuralNetwork bestNeuralNetwork;
+	int generation = 1;
 	unsigned int ammountOfChildren = 100;
-	float mutationRate = 0.05f;
+	float mutationPercentage = 0.05f;
 	float nextGenerationDescendantsPercentage = 0.1f;
 	unsigned int nextGenerationDescendants = 0;
 	unsigned int testAmmount = 1;
 	unsigned int activeTest;
 	//Neural network which is reciving inputs, and giving outputs
 	unsigned int activeNetwork = 0;
-	std::vector <int> theBestNetworksIds;
+	bool finishLearning = false;
 
 	void NextGeneration();
-	void FindTheBestNetworks();
-	void MergeTheBestNetworks();
-	void CopyTheBestNetworksToAllNetworks();
+	//Finds best networks, merges them and populates whole next gen with them
+	void NeuralNetworksEvolve();
 	void MutateAllNetworks();
 };
 

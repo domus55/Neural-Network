@@ -40,7 +40,7 @@ void NeuralNetwork::AddNeurons(int ammount, int ammountOfWeights)
 	for (int i = 0; i < ammount; i++)
 	{
 		Neuron newNeuron(ammountOfWeights);
-		newNeuron.SetMutationRate(mutationRate);
+		newNeuron.SetMutationRate(mutationPercentage);
 		neuron.push_back(std::move(newNeuron));
 	}
 }
@@ -110,7 +110,7 @@ float NeuralNetwork::Output(int neuronId)
 
 void NeuralNetwork::SetMutationRate(float rate)
 {
-	this->mutationRate = rate;
+	this->mutationPercentage = rate;
 }
 
 void NeuralNetwork::Merge(NeuralNetwork neuralNetwork2)
@@ -127,7 +127,7 @@ void NeuralNetwork::Mutate()
 {
 	for (unsigned int i = 0; i < neuron.size(); i++)
 	{
-		neuron[i].SetMutationRate( (1 - WinRate) * mutationRate );
+		neuron[i].SetMutationRate( (1 - WinRate) * mutationPercentage );
 		neuron[i].Mutate();
 	}
 }

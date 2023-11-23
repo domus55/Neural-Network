@@ -35,7 +35,7 @@ public:
 	~Neuron();
 
 private:
-	float mutationRate;
+	float mutationPercentage;
 	float value;
 	float *weight;
 	float bias;

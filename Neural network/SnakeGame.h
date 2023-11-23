@@ -38,10 +38,11 @@ public:
 	float getDistanceToObstacle(lookDirection);
 	float getDistanceToFood(moveDirection);
 	float getDistanceToFood(lookDirection);
-	void printBoard();
+	void printBoard(int generation);
 	void printCurrentDirection();
 	int getSize();
 	status gameStatus = GAME_IN_PROGRESS;
+	static constexpr int BOARD_SIZE = 21;
 
 
 private:
@@ -62,7 +63,6 @@ private:
 		}
 	};
 
-	static constexpr int BOARD_SIZE = 21;
 	static constexpr int MAX_TTL = 200;
 	int board[BOARD_SIZE][BOARD_SIZE];
 	vector2 headPosition;

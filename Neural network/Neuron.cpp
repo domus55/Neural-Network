@@ -49,13 +49,13 @@ void Neuron::MutateWeights()
 {
 	for (int i = 0; i < amountOfWeights; i++)
 	{
-		weight[i] += (rand() % 10000 - 5000) / 5000.0f * mutationRate;
+		weight[i] += (rand() % 10000 - 5000) / 5000.0f * mutationPercentage;
 	}
 }
 
 void Neuron::MutateBias()
 {
-	bias += (rand() % 10000 - 5000) / 5000.0f * mutationRate;
+	bias += (rand() % 10000 - 5000) / 5000.0f * mutationPercentage;
 }
 
 void Neuron::MutateAllWeights()
@@ -78,7 +78,7 @@ void Neuron::Merge(Neuron neuron2)
 
 void Neuron::SetMutationRate(float percentage)
 {
-	this->mutationRate = percentage;
+	this->mutationPercentage = percentage;
 }
 
 float Neuron::Output(int number)

@@ -21,7 +21,7 @@ public:
 
 private:
 	std::vector <Neuron> neuron;
-	float mutationRate;
+	float mutationPercentage;
 	//Ammount of neurons in each layer
 	std::vector <unsigned int> layer;
 	void AddNeurons(int ammount, int ammountOfWeights);

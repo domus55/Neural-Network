@@ -1,8 +1,8 @@
 #include "LearningNeuralNetwork.h"
+#include <algorithm>
 
-int LearningNeuralNetwork::generation = 1;
-
-void LearningNeuralNetwork::Create(std::initializer_list<unsigned int> layers)
+LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren = 200)
+	:bestNeuralNetwork(layers), ammountOfChildren(ammountOfChildren)
 {
 	srand(time(NULL));
 
@@ -10,43 +10,37 @@ void LearningNeuralNetwork::Create(std::initializer_list<unsigned int> layers)
 	{
 		throw std::invalid_argument("Neural Network needs at least 2 layers!");
 	}
-	
-	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
-	theBestNetworksIds.resize(nextGenerationDescendants);
-
-	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
-	{
-		theBestNetworksIds[i] = 0;
-	}
 
 	for (unsigned int i = 0; i < ammountOfChildren; i++)
 	{
 		NeuralNetwork n(layers);
-		n.SetMutationRate(mutationRate);
+		n.SetMutationRate(mutationPercentage);
 		neuralNetwork.push_back(n);
 	}
+
+	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
+	if (nextGenerationDescendants % 2 == 1)
+		nextGenerationDescendants++;
 }
 
-void LearningNeuralNetwork::SetAmmountOfChildren(unsigned int ammount)
+void LearningNeuralNetwork::SetArguments(float nextGenerationDescendantsPercentage, float mutationPercentage)
 {
-	ammountOfChildren = ammount;
-}
+	this->nextGenerationDescendantsPercentage = nextGenerationDescendantsPercentage;
+	this->mutationPercentage = mutationPercentage;
 
-void LearningNeuralNetwork::SetMutationRate(float rate)
-{
-	mutationRate = rate;
+	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
+	if (nextGenerationDescendants % 2 == 1)
+		nextGenerationDescendants++;
+
+	for (NeuralNetwork i : neuralNetwork)
+	{
+		i.SetMutationRate(mutationPercentage);
+	}
 }
 
 void LearningNeuralNetwork::SetTestAmmount(unsigned int ammount)
 {
 	testAmmount = ammount;
-}
-
-void LearningNeuralNetwork::SetNextGenerationDescendantsPercentage(float rate)
-{
-	if (rate < 0 || rate > 1)
-		throw std::invalid_argument("Descendants percentage needs to be between 0-1");
-	nextGenerationDescendantsPercentage = rate;
 }
 
 void LearningNeuralNetwork::Update(float win)
@@ -79,82 +73,79 @@ void LearningNeuralNetwork::Update(float win)
 
 void LearningNeuralNetwork::Input(unsigned int neuronId, float value)
 {
-	neuralNetwork[activeNetwork].Input(neuronId, value);
+	if(finishLearning)
+		bestNeuralNetwork.Input(neuronId, value);
+	else
+		neuralNetwork[activeNetwork].Input(neuronId, value);
 }
 
 void LearningNeuralNetwork::CalculateOutputs()
 {
-	neuralNetwork[activeNetwork].CalculateTheOutput();
+	if (finishLearning)
+		bestNeuralNetwork.CalculateTheOutput();
+	else
+		neuralNetwork[activeNetwork].CalculateTheOutput();
 }
 
 float LearningNeuralNetwork::Output(unsigned int neuronId)
 {
-	return neuralNetwork[activeNetwork].Output(neuronId);
+	if (finishLearning)
+		return bestNeuralNetwork.Output(neuronId);
+	else
+		return neuralNetwork[activeNetwork].Output(neuronId);
+}
+
+void LearningNeuralNetwork::FinishLearning()
+{
+	finishLearning = true;
+}
+
+int LearningNeuralNetwork::GetGeneration()
+{
+	return generation;
+}
+
+float LearningNeuralNetwork::GetBestWinRate()
+{
+	return bestNeuralNetwork.WinRate;
 }
 
 void LearningNeuralNetwork::NextGeneration()
 {
-	FindTheBestNetworks();
-	MergeTheBestNetworks();
-	CopyTheBestNetworksToAllNetworks();
+	NeuralNetworksEvolve();
 	MutateAllNetworks();
 	generation++;
 }
 
-void LearningNeuralNetwork::FindTheBestNetworks()
+void LearningNeuralNetwork::NeuralNetworksEvolve()
 {
-	float maxWinRate = 0;
-
-	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
+	std::sort(neuralNetwork.begin(), neuralNetwork.end(), [](NeuralNetwork n1, NeuralNetwork n2) {return n1.WinRate > n2.WinRate; });
+	
+	//message for debbuging
+	if (false)
 	{
-		maxWinRate = 0;
-
-		for (unsigned int j = 0; j < neuralNetwork.size(); j++)
+		for (NeuralNetwork n : neuralNetwork)
 		{
-			if (neuralNetwork[j].WinRate > maxWinRate)
-			{
-				theBestNetworksIds[i] = j;
-				maxWinRate = neuralNetwork[j].WinRate;
-			}
-		}
-
-		neuralNetwork[theBestNetworksIds[i]].WinRate *= -1;
-	}
-
-	for (unsigned int i = 0; i < nextGenerationDescendants; i++)
-	{
-		neuralNetwork[theBestNetworksIds[i]].WinRate *= -1;
-	}
-}
-
-void LearningNeuralNetwork::MergeTheBestNetworks()
-{
-	for (unsigned int i = 0; i < nextGenerationDescendants / 2; i++)
-	{
-		if (i != nextGenerationDescendants - i - 1)
-		{
-			neuralNetwork[theBestNetworksIds[i]].Merge(neuralNetwork[theBestNetworksIds[nextGenerationDescendants - i - 1]]);
+			std::cout << (int)(n.WinRate * 1000) / 10.0 << " ";
 		}
 	}
-}
+	//std::cout << "\n\n";
 
-void LearningNeuralNetwork::CopyTheBestNetworksToAllNetworks()
-{
-	for (unsigned int i = 0; i < ammountOfChildren; i++)
+	if (neuralNetwork[0].WinRate > bestNeuralNetwork.WinRate && !finishLearning)
 	{
-		bool shouldContinue = false;
-		for (unsigned int j = 0; j < nextGenerationDescendants; j++)
-		{
-			if (theBestNetworksIds[j] == i)
-			{
-				shouldContinue = true;
-			}
-		}
+		bestNeuralNetwork.Copy(neuralNetwork[0]);
+		bestNeuralNetwork.WinRate = neuralNetwork[0].WinRate;
+		//std::cout << "\n\tbestNeuralNetwork.WinRate: " << (int)(bestNeuralNetwork.WinRate * 1000) / 10.0 << "\n";
+	}
 
-		if (shouldContinue) continue;
-		int copyFromNeuron = rand() % (int)( ceil(nextGenerationDescendants / 2) );
+	for (unsigned int i = 0; i < nextGenerationDescendants / 2; i++) 
+	{
+		neuralNetwork[i].Merge(neuralNetwork[i + nextGenerationDescendants / 2]);
+	}
 
-		neuralNetwork[i].Copy( neuralNetwork[ theBestNetworksIds[copyFromNeuron] ] );
+	for (unsigned int i = nextGenerationDescendants; i < ammountOfChildren; i++)
+	{
+		neuralNetwork[i].Copy(neuralNetwork[rand() % nextGenerationDescendants]);
 	}
 }
 
