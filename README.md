@@ -108,7 +108,7 @@ if (bot.GetBestWinRate() > 0.9f && !bot.GetFinishLearning())
 ```
 
 ## Further reading
-Documentation of LearningNeuralNetwork. [Documentation](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learningneuralnetwork-documentation)
+[Documentation](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learningneuralnetwork-documentation) of LearningNeuralNetwork. 
 
 ## Example Code for training a neural network to play snake
 ```cpp
