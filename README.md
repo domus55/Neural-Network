@@ -39,6 +39,7 @@ while zero signifies the absence of food or that an obstacle is in the furthest 
 |![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen1.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen2.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen10.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen25.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen100.gif)|
 
 # Usage
+It is recommended to first familiarize yourself with how this artificial neural network learns. [Learning process](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learning-algorithm).<br>
 To use this neural network, follow these steps:
 ### Import
 Add the following header and source files to your project: `Neuron`, `NeuralNetwork` and `LearningNeuralNetwork`<br>
@@ -105,6 +106,9 @@ if (bot.GetBestWinRate() > 0.9f && !bot.GetFinishLearning())
   bot.SetFinishLearning(true);
 }
 ```
+
+## Further reading
+Here is documentation of LearningNeuralNetwork. [Documentation](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learningneuralnetwork-documentation)
 
 ## Example Code for training a neural network to play snake
 ```cpp
