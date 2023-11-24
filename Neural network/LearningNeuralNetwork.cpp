@@ -1,8 +1,8 @@
 #include "LearningNeuralNetwork.h"
 #include <algorithm>
 
-LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren)
-	:bestNeuralNetwork(layers), ammountOfChildren(ammountOfChildren)
+LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int amountOfChildren)
+	:bestNeuralNetwork(layers), amountOfChildren(amountOfChildren)
 {
 	srand(time(NULL));
 
@@ -11,14 +11,14 @@ LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int>
 		throw std::invalid_argument("Neural Network needs at least 2 layers!");
 	}
 
-	for (unsigned int i = 0; i < ammountOfChildren; i++)
+	for (unsigned int i = 0; i < amountOfChildren; i++)
 	{
 		NeuralNetwork n(layers);
 		n.SetMutationRate(mutationPercentage);
 		neuralNetwork.push_back(n);
 	}
 
-	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
+	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * amountOfChildren);
 	if (nextGenerationDescendants % 2 == 1)
 		nextGenerationDescendants++;
 }
@@ -28,7 +28,7 @@ void LearningNeuralNetwork::SetArguments(float nextGenerationDescendantsPercenta
 	this->nextGenerationDescendantsPercentage = nextGenerationDescendantsPercentage;
 	this->mutationPercentage = mutationPercentage;
 
-	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * ammountOfChildren);
+	nextGenerationDescendants = (int)(nextGenerationDescendantsPercentage * amountOfChildren);
 	if (nextGenerationDescendants % 2 == 1)
 		nextGenerationDescendants++;
 
@@ -38,9 +38,9 @@ void LearningNeuralNetwork::SetArguments(float nextGenerationDescendantsPercenta
 	}
 }
 
-void LearningNeuralNetwork::SetTestAmmount(unsigned int ammount)
+void LearningNeuralNetwork::SetTestAmount(unsigned int amount)
 {
-	testAmmount = ammount;
+	testAmount = amount;
 }
 
 void LearningNeuralNetwork::Update(float win)
@@ -60,14 +60,14 @@ void LearningNeuralNetwork::Update(float win)
 	
 	activeTest++;
 
-	if (activeTest >= testAmmount)
+	if (activeTest >= testAmount)
 	{
 		activeNetwork++;
 		activeTest = 0;
 	}
 	
 
-	if (activeNetwork >= ammountOfChildren)
+	if (activeNetwork >= amountOfChildren)
 	{
 		activeNetwork = 0;
 		NextGeneration();
@@ -157,7 +157,7 @@ void LearningNeuralNetwork::NeuralNetworksEvolve()
 		neuralNetwork[i].Merge(neuralNetwork[i + nextGenerationDescendants / 2]);
 	}
 
-	for (unsigned int i = nextGenerationDescendants; i < ammountOfChildren; i++)
+	for (unsigned int i = nextGenerationDescendants; i < amountOfChildren; i++)
 	{
 		neuralNetwork[i].Copy(neuralNetwork[rand() % nextGenerationDescendants]);
 	}
@@ -165,7 +165,7 @@ void LearningNeuralNetwork::NeuralNetworksEvolve()
 
 void LearningNeuralNetwork::MutateAllNetworks()
 {
-	for (unsigned int i = 0; i < ammountOfChildren; i++)
+	for (unsigned int i = 0; i < amountOfChildren; i++)
 	{
 		neuralNetwork[i].Mutate();
 	}

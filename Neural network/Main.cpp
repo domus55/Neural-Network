@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	//Sets properties of the neural network, use before the first game
 	//If you want you can skip this step, neural network will be working with default properties
 	bot.SetArguments(0.05f, 0.05f);
-	bot.SetTestAmmount(10);
+	bot.SetTestAmount(10);
 
 	for (;;)
 	{

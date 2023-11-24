@@ -35,11 +35,11 @@ void NeuralNetwork::Copy(NeuralNetwork neuralNetwork2)
 	}
 }
 
-void NeuralNetwork::AddNeurons(int ammount, int ammountOfWeights)
+void NeuralNetwork::AddNeurons(int amount, int amountOfWeights)
 {
-	for (int i = 0; i < ammount; i++)
+	for (int i = 0; i < amount; i++)
 	{
-		Neuron newNeuron(ammountOfWeights);
+		Neuron newNeuron(amountOfWeights);
 		newNeuron.SetMutationRate(mutationPercentage);
 		neuron.push_back(std::move(newNeuron));
 	}

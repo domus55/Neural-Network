@@ -24,7 +24,7 @@ private:
 	float mutationPercentage;
 	//Ammount of neurons in each layer
 	std::vector <unsigned int> layer;
-	void AddNeurons(int ammount, int ammountOfWeights);
+	void AddNeurons(int amount, int amountOfWeights);
 	void CalculateNextLayerValue(int prevLayerSize, int nextLayerSize, int firstNeuronIndex);
 };
 
