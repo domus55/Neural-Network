@@ -1,6 +1,5 @@
 #include <iostream>
 #include "SnakeGame.h"
-#include "Neuron.h"
 #include "LearningNeuralNetwork.h"
 #include "gtest/gtest.h"
 
@@ -9,8 +8,13 @@ int main(int argc, char* argv[])
 	//testing::InitGoogleTest(&argc, argv);
 	//return RUN_ALL_TESTS();
 
+	std::cout << "Use 'o', and 'p' buttons, to watch snake \n";
+	Sleep(1000);
+	std::cout << "Click any key\n\n";
+	_getch();
+
 	SnakeGame snake;
-	LearningNeuralNetwork bot({ 14, 6, 3 }, 200);
+	LearningNeuralNetwork bot({ 14, 6, 3 });
 
 	//Sets properties of the neural network, use before the first game
 	//If you want you can skip this step, neural network will be working with default properties
@@ -53,7 +57,7 @@ int main(int argc, char* argv[])
 		snake.move(static_cast<SnakeGame::moveDirection>(max - 1));
 		snake.printBoard(bot.GetGeneration());
 
-		if (bot.GetBestWinRate() > 0.1f && !bot.GetFinishLearning())
+		if (bot.GetBestWinRate() > 0.05f && !bot.GetFinishLearning())
 		{
 			std::cout<<"\n\nFinish learning!\n";
 			bot.SetFinishLearning(true);

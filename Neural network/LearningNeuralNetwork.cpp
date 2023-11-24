@@ -1,7 +1,7 @@
 #include "LearningNeuralNetwork.h"
 #include <algorithm>
 
-LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren = 200)
+LearningNeuralNetwork::LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren)
 	:bestNeuralNetwork(layers), ammountOfChildren(ammountOfChildren)
 {
 	srand(time(NULL));

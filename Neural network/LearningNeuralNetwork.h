@@ -8,7 +8,7 @@
 class LearningNeuralNetwork
 {
 public:
-	LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren);
+	LearningNeuralNetwork(std::initializer_list<unsigned int> layers, unsigned int ammountOfChildren = 200);
 
 	///<summary>
 	/// Optional method, you can call it rigt after creating LearningNeuralNetwork to set argument
