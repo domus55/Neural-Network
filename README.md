@@ -39,7 +39,7 @@ while zero signifies the absence of food or that an obstacle is in the furthest 
 |![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen1.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen2.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen10.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen25.gif)|![gif](https://github.com/domus55/Neural-Network/blob/main/Readme%20files/Gen100.gif)|
 
 # Usage
-It is recommended to first familiarize yourself with how this artificial neural network learns. [Learning process](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learning-algorithm).<br>
+It is recommended to first familiarize yourself with how this artificial neural network learns - [Learning process](https://github.com/domus55/Neural-Network/blob/main/Docs.md#learning-algorithm).<br>
 To use this neural network, follow these steps:
 ### Import
 Add the following header and source files to your project: `Neuron`, `NeuralNetwork` and `LearningNeuralNetwork`<br>
@@ -93,7 +93,7 @@ float out3 = bot.Output(2);
 ```
 ### Learning 
 After each game, inform the network of its performance by calling the `Update(float win)` method. Note:<br>
-`win` is a float value ranging between 0 and 1. A value of 0 indicates that the network made all possible mistakes, while a value of 1 signifies that the network is perfect and doesn't need to improveme.
+`win` is a float value ranging between 0 and 1. A value of 0 indicates that the network made all possible mistakes, while a value of 1 signifies that the network is perfect and doesn't need to improve.
 ```cpp
 bot.Update(0.9);
 ```
